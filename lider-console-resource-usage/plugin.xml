@@ -13,6 +13,11 @@
             id="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask"            
             name="%command.task">
       </command>
+      <command
+            categoryId="tr.org.liderahenk.liderconsole.commands.category"
+            id="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"            
+            name="%command.task">
+      </command>
    </extension>
    
    <extension
@@ -40,12 +45,68 @@
 		       </and>
 		    </enabledWhen> -->        
       </handler>
+             <handler
+            class="tr.org.liderahenk.resourceusage.handlers.ResourceUsageAlertTaskHandler"
+            commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask">
+           <!-- TODO Uncomment this after updating/fixing LiderSourceProvider -->
+		   <!-- <enabledWhen>
+				<and>
+		          <with
+		                variable="tr.org.liderahenk.liderconsole.core.sourceproviders.main.available">
+		             <equals
+		                   value="true">
+		             </equals>
+		          </with>
+				<with
+	                variable="tr.org.liderahenk.liderconsole.core.sourceproviders.main.isAhenkSelected">
+	             	<equals
+		                   value="true">
+		            </equals>
+	          	</with>
+		       </and>
+		    </enabledWhen> -->        
+      </handler>
       
   </extension>
   
   <extension
          point="org.eclipse.ui.menus">
-      
+      <menuContribution
+      		allPopups="false"
+            locationURI="popup:tr.org.liderahenk.liderconsole.menus.ApplyTask?after=additions">
+ 				<command
+                  commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"
+                  id="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"
+                  tooltip="%command.task">
+                  <!-- TODO Uncomment this after updating/fixing LiderSourceProvider -->
+				  <!-- <visibleWhen>
+					   <and>
+			                <iterate operator="or">		
+			                	<or>
+							  	<with
+					                variable="tr.org.liderahenk.liderconsole.core.sourceproviders.main.isSearchSelected">
+						             <equals
+						                   value="true">
+						             </equals>
+					          	</with>
+					          	<with
+					                variable="tr.org.liderahenk.liderconsole.core.sourceproviders.main.isEntrySelected">
+						             <equals
+						                   value="true">
+						             </equals>
+					          	</with>
+					        	</or>
+					        </iterate>
+							<with
+				                variable="tr.org.liderahenk.liderconsole.core.sourceproviders.main.isAhenkSelected">
+				             	<equals
+					                   value="true">
+					            </equals>
+				          	</with>
+					    </and>
+					</visibleWhen> -->               
+           		</command>
+		</menuContribution>
       	<!-- Add extension point contribution for "task execution" dialogs -->
 		<menuContribution
       		allPopups="false"
@@ -83,6 +144,7 @@
 					</visibleWhen> -->               
            		</command>
 		</menuContribution>
+			
   </extension>
   	
 </plugin>

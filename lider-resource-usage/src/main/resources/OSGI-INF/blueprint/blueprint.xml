@@ -14,7 +14,8 @@
 	<!-- IPluginInfo implementation is used to register plugin -->
 	<service ref="pluginInfoImpl"
 		interface="tr.org.liderahenk.lider.core.api.plugin.IPluginInfo" />
-	<bean id="pluginInfoImpl" class="tr.org.liderahenk.resourceusage.plugininfo.PluginInfoImpl"
+	<bean id="pluginInfoImpl"
+		class="tr.org.liderahenk.resourceusage.plugininfo.PluginInfoImpl"
 		init-method="refresh">
 		<!-- Plugin definition -->
 		<property name="pluginName" value="${plugin.name}" />
@@ -28,14 +29,35 @@
 
 	<!-- ICommand implementation is used to process a task execution -->
 	<service ref="ResourceUsageCommand" interface="tr.org.liderahenk.lider.core.api.plugin.ICommand" />
-	<bean id="ResourceUsageCommand" class="tr.org.liderahenk.resourceusage.commands.ResourceUsageCommand">
+	<bean id="ResourceUsageCommand"
+		class="tr.org.liderahenk.resourceusage.commands.ResourceUsageCommand">
 		<property name="resultFactory" ref="resultFactory" />
 		<property name="pluginInfo" ref="pluginInfoImpl" />
 		<property name="logService" ref="logService" />
 		<property name="pluginDbService" ref="pluginDbService" />
 	</bean>
 
-	<reference id="pluginDbService" interface="tr.org.liderahenk.lider.core.api.persistence.IPluginDbService" />
-	<reference id="logService" interface="tr.org.liderahenk.lider.core.api.log.IOperationLogService" />
-	<reference id="resultFactory" interface="tr.org.liderahenk.lider.core.api.service.ICommandResultFactory" />
+	<!-- ICommand implementation is used to process a task execution -->
+	<service ref="ResourceUsageAlertCommand">
+		<interfaces>
+			<value>tr.org.liderahenk.lider.core.api.plugin.ICommand</value>
+			<value>tr.org.liderahenk.lider.core.api.plugin.ITaskAwareCommand</value>
+		</interfaces>
+	</service>
+	<bean id="ResourceUsageAlertCommand"
+		class="tr.org.liderahenk.resourceusage.commands.ResourceUsageAlertCommand">
+		<property name="resultFactory" ref="resultFactory" />
+		<property name="pluginInfo" ref="pluginInfoImpl" />
+		<property name="logService" ref="logService" />
+		<property name="pluginDbService" ref="pluginDbService" />
+		<property name="mailService" ref="mailService" />
+	</bean>
+
+	<reference id="mailService" interface="tr.org.liderahenk.lider.mail.MailServiceImpl" />
+	<reference id="pluginDbService"
+		interface="tr.org.liderahenk.lider.core.api.persistence.IPluginDbService" />
+	<reference id="logService"
+		interface="tr.org.liderahenk.lider.core.api.log.IOperationLogService" />
+	<reference id="resultFactory"
+		interface="tr.org.liderahenk.lider.core.api.service.ICommandResultFactory" />
 </blueprint>

@@ -82,7 +82,6 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 		super(parentShell, dnString);
 		upperCase = getPluginName().toUpperCase(Locale.ENGLISH);
 		eventBroker.subscribe(getPluginName().toUpperCase(Locale.ENGLISH), eventHandler);
-		
 	}
 
 	private EventHandler eventHandler = new EventHandler() {

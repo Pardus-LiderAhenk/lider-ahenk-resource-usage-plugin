@@ -5,7 +5,9 @@
 from base.plugin.abstract_plugin import AbstractPlugin
 from base.system.system import System
 from base.model.enum.ContentType import ContentType
-import json
+from time import sleep
+import smtplib
+import string
 
 
 class ResourceUsage(AbstractPlugin):
@@ -15,10 +17,11 @@ class ResourceUsage(AbstractPlugin):
         self.context = context
         self.logger = self.get_logger()
         self.message_code = self.get_message_code()
+        self.MAX_NET_USAGE = 400000
+        self.MAX_ATTACKS = 4
 
     def handle_task(self):
         print('handle_task')
-
         device = ""
         for part in System.Hardware.Disk.partitions():
             if len(device) != 0:
@@ -26,18 +29,24 @@ class ResourceUsage(AbstractPlugin):
             device = device + part.device
         data = {'System': System.Os.name(), 'Release': System.Os.kernel_release(),
                 'Version': System.Os.distribution_version(), 'Machine': System.Os.architecture(),
-                'CPU Physical Core Count': System.Hardware.Cpu.physical_core_count(), 'Total Memory': System.Hardware.Memory.total(),
-                'Usage': System.Hardware.Memory.used(), 'Total Disc': System.Hardware.Disk.total(),
-                'Usage Disc': System.Hardware.Disk.used(), 'Processor': System.Hardware.Cpu.brand(), 'Device': device,
-                'CPU Logical Core Count': System.Hardware.Cpu.logical_core_count(),
-                'CPU Actual Hz': System.Hardware.Cpu.hz_actual(), 'CPU Advertised Hz': System.Hardware.Cpu.hz_advertised()}
+                'CPU Physical Core Count': 'PSUTIL4.2.0',  # System.Hardware.Cpu.physical_core_count(),
+                'Total Memory': System.Hardware.Memory.total(),
+                'Usage': System.Hardware.Memory.used(),
+                'Total Disc': System.Hardware.Disk.total(),
+                'Usage Disc': System.Hardware.Disk.used(),
+                'Processor': 'PSUTIL4.2.0',  # System.Hardware.Cpu.brand(),
+                'Device': device,
+                'CPU Logical Core Count': 'PSUTIL4.2.0',  # System.Hardware.Cpu.logical_core_count(),
+                'CPU Actual Hz': 'PSUTIL4.2.0',  # System.Hardware.Cpu.hz_actual(),
+                'CPU Advertised Hz': 'PSUTIL4.2.0',  # System.Hardware.Cpu.hz_advertised()
+                }
 
         self.context.create_response(code=self.message_code.TASK_PROCESSED.value, message='resource-usage-response',
                                      data=data, content_type=ContentType.APPLICATION_JSON.value)
 
 
 def handle_task(task, context):
-    print('ResourceUsage Plugin Policy')
+    print('ResourceUsage Plugin Task')
     print('Task Data : {}'.format(str(task)))
     plugin = ResourceUsage(task, context)
     plugin.handle_task()
