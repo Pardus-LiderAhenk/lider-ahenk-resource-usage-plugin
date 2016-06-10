@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tr.org.liderahenk.liderconsole.core.dialogs.DefaultTaskDialog;
+import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
 import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
 import tr.org.liderahenk.liderconsole.core.xmpp.notifications.TaskStatusNotification;
 import tr.org.liderahenk.resourceusage.constants.ResourceUsageConstants;
@@ -293,9 +294,11 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 		return null;
 	}
 
+
 	@Override
-	public boolean validateBeforeExecution() {
-		return true;
+	public void validateBeforeExecution() throws ValidationException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import tr.org.liderahenk.liderconsole.core.constants.LiderConstants;
 import tr.org.liderahenk.liderconsole.core.dialogs.DefaultTaskDialog;
+import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
 import tr.org.liderahenk.liderconsole.core.utils.SWTResourceManager;
 import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
 import tr.org.liderahenk.liderconsole.core.xmpp.notifications.TaskStatusNotification;
@@ -305,9 +306,13 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean validateBeforeExecution() {
-		return true;
+	public void validateBeforeExecution() throws ValidationException {
+		if ( tableViewer.getInput() == null || ((List<ResourceUsageAlertItem>) tableViewer.getInput()).isEmpty()) {
+			throw new ValidationException(Messages.getString("ADD_ITEM"));
+		}
+		
 	}
 
 	@Override
