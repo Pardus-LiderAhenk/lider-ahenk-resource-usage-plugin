@@ -109,18 +109,18 @@ public class ResourceUsageAlertCommand implements ICommand, ITaskAwareCommand{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onTaskUpdate(ICommandExecutionResult result) {
-		logger.info("geldim");
-		logger.debug("geldim2");
 		Map<String, Object> responseData;
 		try {
+			logger.info("geldim");
 			responseData = new ObjectMapper().readValue(result.getResponseData(), 0, result.getResponseData().length,
 					new TypeReference<HashMap<String, Object>>() {
 			});
+			logger.info("geldim2");
 		    List<String> resultList = (List<String>) responseData.get("Result");
 		    for(int i = 0 ; i < resultList.size()/2 ; i=i+2){
 				List<String> to = new ArrayList<String>();
 				to.add(resultList.get(i+1));
-				mailService.sendMail(to, "Ahenk Makinada Limit Değerler Aşıldı!", resultList.get(i));
+				getMailService().sendMail(to, "Ahenk Makinada Limit Değerler Aşıldı!", resultList.get(i));
 		    }
 		} catch (JsonParseException e) {
 			e.printStackTrace();
@@ -129,6 +129,14 @@ public class ResourceUsageAlertCommand implements ICommand, ITaskAwareCommand{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public IMailService getMailService() {
+		return mailService;
+	}
+
+	public void setMailService(IMailService mailService) {
+		this.mailService = mailService;
 	}
 	
 }

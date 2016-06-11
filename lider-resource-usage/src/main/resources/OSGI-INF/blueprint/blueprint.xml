@@ -52,8 +52,8 @@
 		<property name="pluginDbService" ref="pluginDbService" />
 		<property name="mailService" ref="mailService" />
 	</bean>
-
-	<reference id="mailService" interface="tr.org.liderahenk.lider.mail.MailServiceImpl" />
+	
+	<reference id="mailService" interface="tr.org.liderahenk.lider.core.api.mail.IMailService" />
 	<reference id="pluginDbService"
 		interface="tr.org.liderahenk.lider.core.api.persistence.IPluginDbService" />
 	<reference id="logService"
