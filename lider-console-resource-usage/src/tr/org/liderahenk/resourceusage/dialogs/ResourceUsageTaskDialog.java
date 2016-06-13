@@ -294,6 +294,7 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 		return null;
 	}
 
+
 	@Override
 	public void validateBeforeExecution() throws ValidationException {
 		

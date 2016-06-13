@@ -306,6 +306,7 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 
 	public void validateBeforeExecution() throws ValidationException {
