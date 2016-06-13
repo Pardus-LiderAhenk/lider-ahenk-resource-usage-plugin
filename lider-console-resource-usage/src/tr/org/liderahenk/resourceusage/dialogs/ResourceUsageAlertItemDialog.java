@@ -34,7 +34,7 @@ public class ResourceUsageAlertItemDialog extends DefaultLiderTitleAreaDialog {
 	private Label lblEMail;
 	private Text txtEMail;
 
-	private final String[] alertTypes = new String[] { "MEM", "CPU", "DISC" };
+	private final String[] alertTypes = new String[] { "MEM", "DISC" };
 
 	public ResourceUsageAlertItemDialog(Shell parentShell, TableViewer tableViewer) {
 		super(parentShell);
@@ -95,7 +95,10 @@ public class ResourceUsageAlertItemDialog extends DefaultLiderTitleAreaDialog {
 		lblEMail.setText(Messages.getString("EMAIL"));
 
 		txtEMail = new Text(mailComposite, SWT.BORDER);
-		txtEMail.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		gridData.widthHint=220;
+		txtEMail.setLayoutData(gridData);
+		
 		if (item != null && item.getEmail() != null) {
 			txtEMail.setText(item.getEmail());
 		}

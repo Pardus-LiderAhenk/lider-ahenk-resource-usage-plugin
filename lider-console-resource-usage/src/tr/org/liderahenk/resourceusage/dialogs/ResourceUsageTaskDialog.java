@@ -296,7 +296,6 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 
 	@Override
 	public void validateBeforeExecution() throws ValidationException {
-		// TODO Auto-generated method stub
 		
 	}
 

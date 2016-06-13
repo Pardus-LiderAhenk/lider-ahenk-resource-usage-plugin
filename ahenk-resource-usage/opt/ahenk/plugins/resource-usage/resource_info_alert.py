@@ -23,7 +23,7 @@ class ResourceUsage(AbstractPlugin):
         items = (self.data)['items']
         print(System.Hardware.Network.ip_addresses()[0])
         for item in items:
-            if str(item['type']) == 'Memory' and System.Hardware.Memory.percent() > float(item['limit']):
+            if (str(item['type']) == 'Memory' or str(item['type']) == 'Bellek') and System.Hardware.Memory.percent() > float(item['limit']):
                 result.append("Memory Kullanımı Sınır Değeri Aşıldı.\r\nLimit Değeri: %"+item['limit']+"\r\nHesaplanılan Değer: %"+str(System.Hardware.Memory.percent())+"\r\n")
                 result.append(item['email'])
             if str(item['type']) == 'Disk' and float(item['limit']) < System.Hardware.Disk.percent():
