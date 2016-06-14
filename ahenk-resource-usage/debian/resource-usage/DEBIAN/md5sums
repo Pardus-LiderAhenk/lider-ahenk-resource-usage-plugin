@@ -1,0 +1,7 @@
+629a2447333c6fc149492873b9797aa1  opt/ahenk/plugins/resource-usage/__pycache__/resource_info_fetcher.cpython-34.pyc
+fdc6ba4ef7df388b361ac710b8d890b8  opt/ahenk/plugins/resource-usage/main.py
+afa79e56513292e4abd3ba415d86a4a7  opt/ahenk/plugins/resource-usage/policy.py
+fae6e8fd4bd51e345142f2db648a496a  opt/ahenk/plugins/resource-usage/resource_info_alert.py
+6dd728ca7a200f093618104e58ccb95e  opt/ahenk/plugins/resource-usage/resource_info_fetcher.py
+f9d52a4d0a690f917b3fce0895a6ce1c  opt/ahenk/plugins/resource-usage/safe.py
+4ba4b8b807e31807fb4293a1a1e533a9  usr/share/doc/resource-usage/changelog.gz
