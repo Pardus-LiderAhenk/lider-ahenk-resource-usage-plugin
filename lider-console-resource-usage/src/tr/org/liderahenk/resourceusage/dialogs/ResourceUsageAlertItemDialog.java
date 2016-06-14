@@ -58,7 +58,9 @@ public class ResourceUsageAlertItemDialog extends DefaultLiderTitleAreaDialog {
 
 		Composite composite = new Composite(parent, SWT.BORDER);
 		composite.setLayout(new GridLayout(1, false));
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		GridData gData = new GridData(SWT.FILL, SWT.FILL, false, true);
+		gData.widthHint = 520;
+		composite.setLayoutData(gData);
 
 		Composite alertComposite = new Composite(composite, SWT.NONE);
 		alertComposite.setLayout(new GridLayout(4, false));
@@ -96,7 +98,7 @@ public class ResourceUsageAlertItemDialog extends DefaultLiderTitleAreaDialog {
 
 		txtEMail = new Text(mailComposite, SWT.BORDER);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		gridData.widthHint=220;
+		gridData.widthHint=230;
 		txtEMail.setLayoutData(gridData);
 		
 		if (item != null && item.getEmail() != null) {

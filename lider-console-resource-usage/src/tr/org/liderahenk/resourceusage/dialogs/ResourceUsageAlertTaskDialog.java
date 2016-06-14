@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -86,23 +84,6 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 						TaskStatusNotification taskStatus = (TaskStatusNotification) event
 								.getProperty("org.eclipse.e4.data");
 						byte[] data = taskStatus.getResult().getResponseData();
-						final Map<String, Object> responseData = new ObjectMapper().readValue(data, 0, data.length,
-								new TypeReference<HashMap<String, Object>>() {
-						});
-						Display.getDefault().asyncExec(new Runnable() {
-
-							@Override
-							public void run() {
-									if(responseData.containsKey("Result")){
-										List<String> result = (List<String>) (responseData.get("Result"));
-										for(int i = 0 ; i < result.size()/2 ; i=i+2 ){
-											String resultMessage = result.get(i);
-											String emailAddress = result.get(i+1);
-											String subject = "Ahenkte Kaynak Kullanımı Uyarısı";
-										}
-									}
-							}
-						});
 					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
 						Notifier.error("", Messages.getString("UNEXPECTED_ERROR_ACCESSING_RESOURCE_USAGE"));
@@ -313,7 +294,6 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 		if ( tableViewer.getInput() == null || ((List<ResourceUsageAlertItem>) tableViewer.getInput()).isEmpty()) {
 			throw new ValidationException(Messages.getString("ADD_ITEM"));
 		}
-		
 	}
 
 	@Override
