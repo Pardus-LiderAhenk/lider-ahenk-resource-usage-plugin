@@ -13,9 +13,7 @@ import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tr.org.liderahenk.lider.core.api.log.IOperationLogService;
 import tr.org.liderahenk.lider.core.api.mail.IMailService;
-import tr.org.liderahenk.lider.core.api.persistence.IPluginDbService;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommandExecutionResult;
 import tr.org.liderahenk.lider.core.api.rest.requests.ITaskRequest;
 import tr.org.liderahenk.lider.core.api.plugin.IPluginInfo;
@@ -32,8 +30,6 @@ public class ResourceUsageAlertCommand implements ICommand, ITaskAwareCommand{
 	
 	private ICommandResultFactory resultFactory;
 	private IPluginInfo pluginInfo;
-	private IOperationLogService logService;
-	private IPluginDbService pluginDbService;
 	private IMailService mailService;
 
 	@Override
@@ -96,14 +92,6 @@ public class ResourceUsageAlertCommand implements ICommand, ITaskAwareCommand{
 	
 	public void setPluginInfo(IPluginInfo pluginInfo) {
 		this.pluginInfo = pluginInfo;
-	}
-
-	public void setLogService(IOperationLogService logService) {
-		this.logService = logService;
-	}
-
-	public void setPluginDbService(IPluginDbService pluginDbService) {
-		this.pluginDbService = pluginDbService;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -10,5 +10,4 @@ Package: resource-usage
 Version: 1.0.0
 Architecture: any
 Depends: python3 (>= 3)
-Description: LiderAhenk ahenk-resource-usage application
- Long Desc
+Description: This plugin provides remote machine's Resource Usage Info and gives alert when defined limit values for disk and memory are exceeded at remote machine.
