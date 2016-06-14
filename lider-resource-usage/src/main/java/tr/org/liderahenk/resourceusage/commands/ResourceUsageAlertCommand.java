@@ -111,11 +111,9 @@ public class ResourceUsageAlertCommand implements ICommand, ITaskAwareCommand{
 	public void onTaskUpdate(ICommandExecutionResult result) {
 		Map<String, Object> responseData;
 		try {
-			logger.info("geldim");
 			responseData = new ObjectMapper().readValue(result.getResponseData(), 0, result.getResponseData().length,
 					new TypeReference<HashMap<String, Object>>() {
 			});
-			logger.info("geldim2");
 		    List<String> resultList = (List<String>) responseData.get("Result");
 		    for(int i = 0 ; i < resultList.size()/2 ; i=i+2){
 				List<String> to = new ArrayList<String>();
