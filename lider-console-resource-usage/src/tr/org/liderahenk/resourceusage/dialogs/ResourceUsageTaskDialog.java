@@ -173,8 +173,11 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, true);
+		gridData.widthHint = 600;
+		composite.setLayoutData(gridData);
 
+		
 		Composite recordInfoComposite = new Composite(composite, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		recordInfoComposite.setLayout(gridLayout);
@@ -271,7 +274,7 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 		lblTotalMemoryInfo = new Label(memoryComposite, SWT.NONE);
 
 		lblMemoryUsage = new Label(memoryComposite, SWT.NONE);
-		lblMemoryUsage.setText(Messages.getString("PROCESSOR"));
+		lblMemoryUsage.setText(Messages.getString("USAGE_DISC"));
 		lblMemoryUsage.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_CYAN));
 
 		lblMemoryUsageInfo = new Label(memoryComposite, SWT.NONE);

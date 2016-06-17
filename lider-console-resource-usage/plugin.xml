@@ -16,7 +16,7 @@
       <command
             categoryId="tr.org.liderahenk.liderconsole.commands.category"
             id="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"            
-            name="%command.task">
+            name="%command.taskalert">
       </command>
    </extension>
    
@@ -77,7 +77,7 @@
  				<command
                   commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"
                   id="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"
-                  tooltip="%command.task">
+                  tooltip="%command.taskalert">
                   <!-- TODO Uncomment this after updating/fixing LiderSourceProvider -->
 				  <!-- <visibleWhen>
 					   <and>

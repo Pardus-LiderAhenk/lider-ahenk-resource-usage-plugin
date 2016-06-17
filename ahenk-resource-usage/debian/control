@@ -11,4 +11,5 @@ Version: 1.0.0
 Architecture: any
 Depends: python3 (>= 3)
 Description: Lider Ahenk resource usage plugin
+  This plugin provides remote machine's resource usage Info and gives alert when defined limit values for disk and memory are exceeded.
 

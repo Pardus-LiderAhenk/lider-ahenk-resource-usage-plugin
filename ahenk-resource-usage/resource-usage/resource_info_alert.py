@@ -19,6 +19,7 @@ class ResourceUsage(AbstractPlugin):
 
         result = []
         items = (self.data)['items']
+        print(str(System.Hardware.Disk.percent()))
         for item in items:
             if (str(item['type']) == 'Memory' or str(
                     item['type']) == 'Bellek') and System.Hardware.Memory.percent() > float(item['limit']):
