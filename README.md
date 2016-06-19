@@ -1,6 +1,6 @@
 # lider-ahenk-resource-usage-plugin
 
-Resource usage plugin for [Lider Ahenk project](http://www.liderahenk.org.tr) which provides resource usage statistics about memory, CPU and disk. It also provides alarm mechanism which is triggered when system reousrce reaches pre-defined threshold value.
+Resource usage plugin for [Lider Ahenk project](http://www.liderahenk.org.tr) which provides resource usage statistics about memory, CPU and disk. It also provides alarm mechanism which is triggered when system resource reaches pre-defined threshold value.
 
 |                   | **user-oriented** | **machine-oriented** |
 |:-----------------:|:-----------------:|:--------------------:|
