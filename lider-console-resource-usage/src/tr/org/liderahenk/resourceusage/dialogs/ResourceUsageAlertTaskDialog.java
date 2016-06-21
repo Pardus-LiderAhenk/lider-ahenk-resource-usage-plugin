@@ -319,7 +319,7 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 
 	@Override
 	public String getPluginVersion() {
-		return "1.0.0";
+		return ResourceUsageConstants.PLUGIN_VERSION;
 	}
 
 	public ResourceUsageAlertItem getItem() {
