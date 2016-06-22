@@ -5,9 +5,6 @@
 from base.plugin.abstract_plugin import AbstractPlugin
 from base.system.system import System
 from base.model.enum.ContentType import ContentType
-from time import sleep
-import smtplib
-import string
 
 
 class ResourceUsage(AbstractPlugin):
@@ -21,7 +18,6 @@ class ResourceUsage(AbstractPlugin):
         self.MAX_ATTACKS = 4
 
     def handle_task(self):
-        print('handle_task')
         device = ""
         for part in System.Hardware.Disk.partitions():
             if len(device) != 0:
@@ -46,7 +42,7 @@ class ResourceUsage(AbstractPlugin):
 
 
 def handle_task(task, context):
-    print('ResourceUsage Plugin Task')
-    print('Task Data : {}'.format(str(task)))
+    print('RESOURCE USAGE TASK')
     plugin = ResourceUsage(task, context)
     plugin.handle_task()
+    print('RESOURCE USAGE TASK HANDLED')
