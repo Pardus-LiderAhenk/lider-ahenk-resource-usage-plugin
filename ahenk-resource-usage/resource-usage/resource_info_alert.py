@@ -18,8 +18,7 @@ class ResourceUsage(AbstractPlugin):
     def handle_task(self):
 
         result = []
-        items = (self.data)['items']
-        print(str(System.Hardware.Disk.percent()))
+        items = self.data['items']
         for item in items:
             if (str(item['type']) == 'Memory' or str(
                     item['type']) == 'Bellek') and System.Hardware.Memory.percent() > float(item['limit']):
@@ -60,7 +59,7 @@ class ResourceUsage(AbstractPlugin):
 
 
 def handle_task(task, context):
-    print('ResourceUsage Plugin Alert Task')
-    print('Task Data : {}'.format(str(task)))
+    print('RESOURCE USAGE ALERT TASK')
     plugin = ResourceUsage(task, context)
     plugin.handle_task()
+    print('RESOURCE USAGE ALERT TASK HANDLED')
