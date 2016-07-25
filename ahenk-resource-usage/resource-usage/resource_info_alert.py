@@ -5,7 +5,7 @@
 from base.plugin.abstract_plugin import AbstractPlugin
 from base.system.system import System
 from base.model.enum.ContentType import ContentType
-
+import json
 
 class ResourceUsage(AbstractPlugin):
     def __init__(self, data, context):
@@ -54,7 +54,7 @@ class ResourceUsage(AbstractPlugin):
             data = {'Result': result}
             self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
                                          message='resource-usage-alert-response',
-                                         data=data, content_type=ContentType.APPLICATION_JSON.value)
+                                         data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
             self.logger.debug("Task processed successfully")
         except Exception as e:
             self.logger.debug(str(e))
