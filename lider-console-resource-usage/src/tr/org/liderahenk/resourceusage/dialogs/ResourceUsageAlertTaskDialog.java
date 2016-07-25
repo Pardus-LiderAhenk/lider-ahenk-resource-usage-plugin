@@ -2,14 +2,12 @@ package tr.org.liderahenk.resourceusage.dialogs;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -31,7 +29,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
@@ -51,7 +48,7 @@ import tr.org.liderahenk.resourceusage.model.ResourceUsageAlertItem;
  * Task execution dialog for resource-usage plugin.
  * 
  */
-public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
+public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog {
 
 	private static final Logger logger = LoggerFactory.getLogger(ResourceUsageAlertTaskDialog.class);
 
@@ -60,45 +57,13 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 	private Button btnAdd;
 	private Button btnDelete;
 	private Button btnEdit;
-	String upperCase = "";
 
 	private ResourceUsageAlertItem item;
 
-	private IEventBroker eventBroker = (IEventBroker) PlatformUI.getWorkbench().getService(IEventBroker.class);
-
 	public ResourceUsageAlertTaskDialog(Shell parentShell, String dnString) {
 		super(parentShell, dnString);
-		upperCase = getPluginName().toUpperCase(Locale.ENGLISH);
-		eventBroker.subscribe(getPluginName().toUpperCase(Locale.ENGLISH), eventHandler);
-
+		subscribeEventHandler(taskStatusNotificationHandler);
 	}
-
-	private EventHandler eventHandler = new EventHandler() {
-		@Override
-		public void handleEvent(final Event event) {
-			Job job = new Job("TASK") {
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask("RESOURCE_USAGE_ALERT", 100);
-					try {
-						TaskStatusNotification taskStatus = (TaskStatusNotification) event
-								.getProperty("org.eclipse.e4.data");
-						byte[] data = taskStatus.getResult().getResponseData();
-					} catch (Exception e) {
-						logger.error(e.getMessage(), e);
-						Notifier.error("", Messages.getString("UNEXPECTED_ERROR_ACCESSING_RESOURCE_USAGE"));
-					}
-					monitor.worked(100);
-					monitor.done();
-
-					return Status.OK_STATUS;
-				}
-			};
-
-			job.setUser(true);
-			job.schedule();
-		}
-	};
 
 	@Override
 	public String createTitle() {
@@ -107,9 +72,7 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 
 	@Override
 	public Control createTaskDialogArea(Composite parent) {
-
 		createTableArea(parent);
-
 		return null;
 	}
 
@@ -289,9 +252,8 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 
 	@SuppressWarnings("unchecked")
 	@Override
-
 	public void validateBeforeExecution() throws ValidationException {
-		if ( tableViewer.getInput() == null || ((List<ResourceUsageAlertItem>) tableViewer.getInput()).isEmpty()) {
+		if (tableViewer.getInput() == null || ((List<ResourceUsageAlertItem>) tableViewer.getInput()).isEmpty()) {
 			throw new ValidationException(Messages.getString("ADD_ITEM"));
 		}
 	}
@@ -321,6 +283,33 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 	public String getPluginVersion() {
 		return ResourceUsageConstants.PLUGIN_VERSION;
 	}
+
+	private EventHandler taskStatusNotificationHandler = new EventHandler() {
+		@Override
+		public void handleEvent(final Event event) {
+			Job job = new Job("TASK") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					monitor.beginTask("RESOURCE_USAGE_ALERT", 100);
+					try {
+						TaskStatusNotification taskStatus = (TaskStatusNotification) event
+								.getProperty("org.eclipse.e4.data");
+						byte[] data = taskStatus.getResult().getResponseData();
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+						Notifier.error("", Messages.getString("UNEXPECTED_ERROR_ACCESSING_RESOURCE_USAGE"));
+					}
+					monitor.worked(100);
+					monitor.done();
+
+					return Status.OK_STATUS;
+				}
+			};
+
+			job.setUser(true);
+			job.schedule();
+		}
+	};
 
 	public ResourceUsageAlertItem getItem() {
 		return item;
