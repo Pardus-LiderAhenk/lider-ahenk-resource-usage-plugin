@@ -6,6 +6,7 @@
 from base.plugin.abstract_plugin import AbstractPlugin
 from base.system.system import System
 from base.model.enum.ContentType import ContentType
+import json
 
 
 class ResourceUsage(AbstractPlugin):
@@ -42,7 +43,7 @@ class ResourceUsage(AbstractPlugin):
             self.logger.debug("[RESOURCE USAGE] Resource usage info gathered.")
             self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
                                          message='Anlık kaynak kullanım bilgisi başarıyla toplandı.',
-                                         data=data, content_type=ContentType.APPLICATION_JSON.value)
+                                         data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
         except Exception as e:
             self.logger.error(str(e))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,
