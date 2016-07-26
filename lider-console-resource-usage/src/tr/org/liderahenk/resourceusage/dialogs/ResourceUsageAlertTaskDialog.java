@@ -21,7 +21,7 @@ import tr.org.liderahenk.liderconsole.core.dialogs.DefaultTaskDialog;
 import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
 import tr.org.liderahenk.resourceusage.constants.ResourceUsageConstants;
 import tr.org.liderahenk.resourceusage.i18n.Messages;
-import tr.org.liderahenk.resourceusage.tabs.AlarmListTab;
+import tr.org.liderahenk.resourceusage.tabs.AlertListTab;
 import tr.org.liderahenk.resourceusage.tabs.DataListTab;
 
 /**
@@ -34,12 +34,12 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 
 
 	private DataListTab dataList;
-	private AlarmListTab alarmList;
+	private AlertListTab alarmList;
 	
 	public ResourceUsageAlertTaskDialog(Shell parentShell, String dnString) {
 		super(parentShell, dnString);
 		this.dataList = new DataListTab();
-		this.alarmList = new AlarmListTab();
+		this.alarmList = new AlertListTab();
 
 	}
 	

@@ -61,12 +61,12 @@ public class DataListTab implements IUsageTab {
 	private Label lblWindowLength;
 	private Text txtWindowLength;
 	private TableViewer tableViewer;
-	private ResourceUsageTableItem item;
 	
 	private final String[] sendMailArray = new String[] { "SEND_MAIL", "SEND_CRITICAL_MAIL" };
 	
 	@Override
 	public void createInputs(Composite tabComposite) throws Exception {
+		
 		Composite group = new Composite(tabComposite, SWT.NONE);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
 		group.setLayout(new GridLayout(2, false));
@@ -225,7 +225,7 @@ public class DataListTab implements IUsageTab {
 		lblMailAddress.setText(Messages.getString("MAIL_ADDRESS"));
 
 		txtMailAddress = new Text(actionInfoComposite, SWT.BORDER);
-		txtMailAddress.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		txtMailAddress.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		Composite  optionsComposite = new Composite(memoryCpuUsageMonitoring, SWT.NONE);
 		optionsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -233,7 +233,7 @@ public class DataListTab implements IUsageTab {
 
 		btnFloatingAverage = new Button(optionsComposite, SWT.NONE);
 		btnFloatingAverage.setText(Messages.getString("FLOATING_AVERAGE"));
-		GridData btnGridData = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+		GridData btnGridData = new GridData(SWT.CENTER, SWT.CENTER, true, true);
 		btnGridData.widthHint = 150;
 		btnFloatingAverage.setLayoutData(btnGridData);
 		btnFloatingAverage.addSelectionListener(new SelectionListener() {
@@ -266,9 +266,7 @@ public class DataListTab implements IUsageTab {
 		
 		
 		Composite informationObjects = new Composite(group, SWT.BORDER);
-		GridData infoGd = new GridData(SWT.FILL, SWT.FILL, true, true);
-//		infoGd.widthHint = 300;
-		memoryCpuUsageMonitoring.setLayoutData(memCpuGd);
+		memoryCpuUsageMonitoring.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		informationObjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		informationObjects.setLayout(new GridLayout(1, false));
 
@@ -389,14 +387,6 @@ public class DataListTab implements IUsageTab {
 	@Override
 	public void validateBeforeSave() throws ValidationException {
 		
-	}
-
-	public ResourceUsageTableItem getItem() {
-		return item;
-	}
-
-	public void setItem(ResourceUsageTableItem item) {
-		this.item = item;
 	}
 
 }
