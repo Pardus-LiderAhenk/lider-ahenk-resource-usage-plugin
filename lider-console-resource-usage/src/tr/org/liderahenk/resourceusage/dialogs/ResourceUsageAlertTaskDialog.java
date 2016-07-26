@@ -3,6 +3,7 @@ package tr.org.liderahenk.resourceusage.dialogs;
 import java.util.Map;
 import java.util.Map;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -53,12 +54,12 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 
 			Composite composite = new Composite(parent, SWT.NONE);
 			GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
-			gridData.widthHint = 800;
-			gridData.heightHint = 1000;
+			gridData.widthHint = 1400;
+			gridData.heightHint = 600;
 			composite.setLayoutData(gridData);
 			composite.setLayout(new GridLayout(1, false));
 			CTabFolder tabFolder = createTabFolder(composite);
-			tabFolder.setSize(600,600);
+			tabFolder.setSize(1300,500);
 			dataList.createInputs(createInputTab(tabFolder, Messages.getString("DATA_LIST"), true));
 
 			alarmList.createInputs(createInputTab(tabFolder, Messages.getString("ALERT_LIST"), true));
@@ -109,6 +110,6 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 //
 //	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-
+		createButton(parent, IDialogConstants.CANCEL_ID, Messages.getString("CANCEL"), true);
 	}
 }
