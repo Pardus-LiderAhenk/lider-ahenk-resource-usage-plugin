@@ -13,5 +13,4 @@ public class ResourceUsageTaskHandler extends SingleSelectionHandler {
 		dialog.create();
 		dialog.openWithEventBroker();
 	}
-
 }

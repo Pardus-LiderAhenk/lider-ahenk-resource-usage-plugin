@@ -2,7 +2,6 @@ package tr.org.liderahenk.resourceusage.dialogs;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -11,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -20,7 +18,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
@@ -75,93 +72,11 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 	private Label lblTotalDiscInfo;
 	private Label lblUsageDisc;
 	private Label lblUsageDiscInfo;
-	String upperCase = "";
-
-	private IEventBroker eventBroker = (IEventBroker) PlatformUI.getWorkbench().getService(IEventBroker.class);
 
 	public ResourceUsageTaskDialog(Shell parentShell, String dnString) {
 		super(parentShell, dnString);
-		upperCase = getPluginName().toUpperCase(Locale.ENGLISH);
-		eventBroker.subscribe(getPluginName().toUpperCase(Locale.ENGLISH), eventHandler);
+		subscribeEventHandler(taskStatusNotificationHandler);
 	}
-
-	private EventHandler eventHandler = new EventHandler() {
-		@Override
-		public void handleEvent(final Event event) {
-			Job job = new Job("TASK") {
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask("RESOURCE_USAGE", 100);
-					try {
-						TaskStatusNotification taskStatus = (TaskStatusNotification) event
-								.getProperty("org.eclipse.e4.data");
-						byte[] data = taskStatus.getResult().getResponseData();
-						final Map<String, Object> responseData = new ObjectMapper().readValue(data, 0, data.length,
-								new TypeReference<HashMap<String, Object>>() {
-						});
-						Display.getDefault().asyncExec(new Runnable() {
-
-							@Override
-							public void run() {
-								lblSystemInfo.setText(responseData.containsKey("System")
-										? responseData.get("System").toString() : "");
-								lblSystemInfo.pack();
-								lblReleaseInfo.setText(responseData.containsKey("Release")
-										? responseData.get("Release").toString() : "");
-								lblReleaseInfo.pack();
-								lblVersionInfo.setText(responseData.containsKey("Version")
-										? responseData.get("Version").toString() : "");
-								lblVersionInfo.pack();
-								lblMachineInfo.setText(responseData.containsKey("Machine")
-										? responseData.get("Machine").toString() : "");
-								lblMachineInfo.pack();
-								lblProcessorInfo.setText(responseData.containsKey("Processor")
-										? responseData.get("Processor").toString() : "");
-								lblProcessorInfo.pack();
-								lblCPUPhysicalCoreCountInfo.setText(responseData.containsKey("CPU Physical Core Count")
-										? responseData.get("CPU Physical Core Count").toString() : "");
-								lblCPUPhysicalCoreCountInfo.pack();
-								lblCPULogicalCoreCountInfo.setText(responseData.containsKey("CPU Logical Core Count")
-										? responseData.get("CPU Logical Core Count").toString() : "");
-								lblCPULogicalCoreCountInfo.pack();
-								lblCPUActualHzInfo.setText(responseData.containsKey("CPU Actual Hz")
-										? responseData.get("CPU Actual Hz").toString() : "");
-								lblCPUActualHzInfo.pack();
-								lblCPUAdvertisedHzInfo.setText(responseData.containsKey("CPU Advertised Hz")
-										? responseData.get("CPU Advertised Hz").toString() : "");
-								lblCPUAdvertisedHzInfo.pack();
-								lblTotalMemoryInfo.setText(responseData.containsKey("Total Memory")
-										? responseData.get("Total Memory").toString() + " MB" : "");
-								lblTotalMemoryInfo.pack();
-								lblMemoryUsageInfo.setText(responseData.containsKey("Usage")
-										? responseData.get("Usage").toString() + " MB" : "");
-								lblMemoryUsageInfo.pack();
-								lblTotalDiscInfo.setText(responseData.containsKey("Total Disc")
-										? responseData.get("Total Disc").toString() + " MB" : "");
-								lblTotalDiscInfo.pack();
-								lblUsageDiscInfo.setText(responseData.containsKey("Usage Disc")
-										? responseData.get("Usage Disc").toString() + " MB" : "");
-								lblUsageDiscInfo.pack();
-								lblPartitionNameInfo.setText(responseData.containsKey("Device")
-										? responseData.get("Device").toString() : "");
-								lblPartitionNameInfo.pack();
-							}
-						});
-					} catch (Exception e) {
-						logger.error(e.getMessage(), e);
-						Notifier.error("", Messages.getString("UNEXPECTED_ERROR_ACCESSING_RESOURCE_USAGE"));
-					}
-					monitor.worked(100);
-					monitor.done();
-
-					return Status.OK_STATUS;
-				}
-			};
-
-			job.setUser(true);
-			job.schedule();
-		}
-	};
 
 	@Override
 	public String createTitle() {
@@ -177,7 +92,6 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 		gridData.widthHint = 600;
 		composite.setLayoutData(gridData);
 
-		
 		Composite recordInfoComposite = new Composite(composite, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		recordInfoComposite.setLayout(gridLayout);
@@ -322,6 +236,84 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 	public String getCommandId() {
 		return "RESOURCE_INFO_FETCHER";
 	}
+
+	private EventHandler taskStatusNotificationHandler = new EventHandler() {
+		@Override
+		public void handleEvent(final Event event) {
+			Job job = new Job("TASK") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					monitor.beginTask("RESOURCE_USAGE", 100);
+					try {
+						TaskStatusNotification taskStatus = (TaskStatusNotification) event
+								.getProperty("org.eclipse.e4.data");
+						byte[] data = taskStatus.getResult().getResponseData();
+						final Map<String, Object> responseData = new ObjectMapper().readValue(data, 0, data.length,
+								new TypeReference<HashMap<String, Object>>() {
+								});
+						Display.getDefault().asyncExec(new Runnable() {
+
+							@Override
+							public void run() {
+								lblSystemInfo.setText(responseData.containsKey("System")
+										? responseData.get("System").toString() : "");
+								lblSystemInfo.pack();
+								lblReleaseInfo.setText(responseData.containsKey("Release")
+										? responseData.get("Release").toString() : "");
+								lblReleaseInfo.pack();
+								lblVersionInfo.setText(responseData.containsKey("Version")
+										? responseData.get("Version").toString() : "");
+								lblVersionInfo.pack();
+								lblMachineInfo.setText(responseData.containsKey("Machine")
+										? responseData.get("Machine").toString() : "");
+								lblMachineInfo.pack();
+								lblProcessorInfo.setText(responseData.containsKey("Processor")
+										? responseData.get("Processor").toString() : "");
+								lblProcessorInfo.pack();
+								lblCPUPhysicalCoreCountInfo.setText(responseData.containsKey("CPU Physical Core Count")
+										? responseData.get("CPU Physical Core Count").toString() : "");
+								lblCPUPhysicalCoreCountInfo.pack();
+								lblCPULogicalCoreCountInfo.setText(responseData.containsKey("CPU Logical Core Count")
+										? responseData.get("CPU Logical Core Count").toString() : "");
+								lblCPULogicalCoreCountInfo.pack();
+								lblCPUActualHzInfo.setText(responseData.containsKey("CPU Actual Hz")
+										? responseData.get("CPU Actual Hz").toString() : "");
+								lblCPUActualHzInfo.pack();
+								lblCPUAdvertisedHzInfo.setText(responseData.containsKey("CPU Advertised Hz")
+										? responseData.get("CPU Advertised Hz").toString() : "");
+								lblCPUAdvertisedHzInfo.pack();
+								lblTotalMemoryInfo.setText(responseData.containsKey("Total Memory")
+										? responseData.get("Total Memory").toString() + " MB" : "");
+								lblTotalMemoryInfo.pack();
+								lblMemoryUsageInfo.setText(responseData.containsKey("Usage")
+										? responseData.get("Usage").toString() + " MB" : "");
+								lblMemoryUsageInfo.pack();
+								lblTotalDiscInfo.setText(responseData.containsKey("Total Disc")
+										? responseData.get("Total Disc").toString() + " MB" : "");
+								lblTotalDiscInfo.pack();
+								lblUsageDiscInfo.setText(responseData.containsKey("Usage Disc")
+										? responseData.get("Usage Disc").toString() + " MB" : "");
+								lblUsageDiscInfo.pack();
+								lblPartitionNameInfo.setText(responseData.containsKey("Device")
+										? responseData.get("Device").toString() : "");
+								lblPartitionNameInfo.pack();
+							}
+						});
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+						Notifier.error("", Messages.getString("UNEXPECTED_ERROR_ACCESSING_RESOURCE_USAGE"));
+					}
+					monitor.worked(100);
+					monitor.done();
+
+					return Status.OK_STATUS;
+				}
+			};
+
+			job.setUser(true);
+			job.schedule();
+		}
+	};
 
 	@Override
 	public String getPluginName() {

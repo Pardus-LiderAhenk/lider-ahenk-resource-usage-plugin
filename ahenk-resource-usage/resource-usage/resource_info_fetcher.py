@@ -1,11 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # Author: Cemre ALPSOY <cemre.alpsoy@agem.com.tr>
+# Author: Emre Akkaya <emre.akkaya@agem.com.tr>
 
 from base.plugin.abstract_plugin import AbstractPlugin
 from base.system.system import System
 from base.model.enum.ContentType import ContentType
 import json
+
 
 class ResourceUsage(AbstractPlugin):
     def __init__(self, data, context):
@@ -16,9 +18,9 @@ class ResourceUsage(AbstractPlugin):
         self.message_code = self.get_message_code()
 
     def handle_task(self):
-        self.logger.debug("Handling Resource Info Fetcher Task")
-        device = ""
         try:
+            device = ""
+            self.logger.debug("[RESOURCE USAGE] Gathering resource usage for disk, memory and CPU.")
             for part in System.Hardware.Disk.partitions():
                 if len(device) != 0:
                     device += ", "
@@ -36,19 +38,17 @@ class ResourceUsage(AbstractPlugin):
                     'CPU Actual Hz':  System.Hardware.Cpu.hz_actual(),
                     'CPU Advertised Hz': System.Hardware.Cpu.hz_advertised()
                     }
-            self.logger.debug("System Info is ready to send")
-            self.context.create_response(code=self.message_code.TASK_PROCESSED.value, message='resource-usage-response',
+            self.logger.debug("[RESOURCE USAGE] Resource usage info gathered.")
+            self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
+                                         message='Anlık kaynak kullanım bilgisi başarıyla toplandı.',
                                          data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
-            self.logger.debug("Resource Info Fetcher Task processed successfully")
         except Exception as e:
-            self.logger.debug(str(e))
+            self.logger.error(str(e))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,
-                                         message='Error in Resource Info Fetcher Task',
+                                         message='Anlık kaynak kullanım bilgisi toplanırken hata oluştu:' + str(e),
                                          content_type=ContentType.APPLICATION_JSON.value)
 
 
 def handle_task(task, context):
-    print('RESOURCE USAGE TASK')
     plugin = ResourceUsage(task, context)
     plugin.handle_task()
-    print('RESOURCE USAGE TASK HANDLED')

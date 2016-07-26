@@ -1,6 +1,7 @@
 package tr.org.liderahenk.resourceusage.dialogs;
 
 import java.util.Map;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -88,7 +89,6 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 	}
 	@Override
 	public void validateBeforeExecution() throws ValidationException {
-		
 	}
 	@Override
 	public Map<String, Object> getParameterMap() {
@@ -109,5 +109,6 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 //
 //	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
+
 	}
 }
