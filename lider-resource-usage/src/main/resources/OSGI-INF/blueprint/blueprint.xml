@@ -43,7 +43,7 @@
 	<service ref="ResourceUsageAlertCommand">
 		<interfaces>
 			<value>tr.org.liderahenk.lider.core.api.plugin.ICommand</value>
-			<value>tr.org.liderahenk.lider.core.api.plugin.ITaskAwareCommand</value>
+		<!-- 	<value>tr.org.liderahenk.lider.core.api.plugin.ITaskAwareCommand</value> -->
 		</interfaces>
 	</service>
 	<bean id="ResourceUsageAlertCommand"
