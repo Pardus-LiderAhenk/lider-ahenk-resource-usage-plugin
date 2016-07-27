@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -145,18 +146,14 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 
 							@Override
 							public void run() {
-								String[] result = responseData.containsKey("packageSource")
-										? responseData.get("packageSource").toString().split("\\r?\\n") : null;
-								if (result != null && result.length > 0) {
-									ArrayList<ResourceUsageTableItem> items = new ArrayList<>();
-									for (String data : result) {
+								
+								if(responseData != null && !responseData.isEmpty()){
+									if(responseData.containsKey("memoryUsage") && responseData.containsKey("diskUsage") && responseData.containsKey("cpuPercentage")){
 										ResourceUsageTableItem item = new ResourceUsageTableItem();
-										items.add(item);
+										item.setCpuUsed(responseData.get("cpuPercentage").toString());
+										item.setMemUsed(responseData.get("memoryUsage").toString());
+										dataList.addTableItem(item);
 									}
-									if (items != null){
-										
-									}
-//										tableViewer.setInput(items);
 								}
 							}
 						});

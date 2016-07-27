@@ -1,5 +1,6 @@
 package tr.org.liderahenk.resourceusage.tabs;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -182,6 +183,11 @@ public class AlertListTab implements IUsageTab {
 		setPluginName(pluginName);
 		setPluginVersion(pluginVersion);
 		createInputs(tabComposite);
+	}
+
+	@Override
+	public void addTableItem(Object tableItem) {
+		
 	}
 
 }

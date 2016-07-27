@@ -1,5 +1,7 @@
 package tr.org.liderahenk.resourceusage.tabs;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ public class DataListTab implements IUsageTab {
 	private String pluginVersion;
 	private String pluginName;
 	private Set<String> dnSet;
+	private ArrayList<ResourceUsageTableItem> items = new ArrayList<>();
 	public String getPluginVersion() {
 		return pluginVersion;
 	}
@@ -475,5 +478,23 @@ public class DataListTab implements IUsageTab {
 		setPluginName(pluginName);
 		setPluginVersion(pluginVersion);
 		createInputs(tabComposite);
+	}
+
+	@Override
+	public void addTableItem(Object tableItem) {
+		ResourceUsageTableItem item = (ResourceUsageTableItem) tableItem;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		item.setRecordDate(dateFormat.format(date));
+		getItems().add(item);
+		tableViewer.setInput(getItems());
+	}
+
+	public ArrayList<ResourceUsageTableItem> getItems() {
+		return items;
+	}
+
+	public void setItems(ArrayList<ResourceUsageTableItem> items) {
+		this.items = items;
 	}
 }

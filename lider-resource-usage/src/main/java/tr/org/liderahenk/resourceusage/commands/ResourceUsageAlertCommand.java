@@ -1,30 +1,22 @@
 package tr.org.liderahenk.resourceusage.commands;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tr.org.liderahenk.lider.core.api.mail.IMailService;
-import tr.org.liderahenk.lider.core.api.persistence.entities.ICommandExecutionResult;
-import tr.org.liderahenk.lider.core.api.rest.requests.ITaskRequest;
-import tr.org.liderahenk.lider.core.api.plugin.IPluginInfo;
-import tr.org.liderahenk.lider.core.api.plugin.ITaskAwareCommand;
 import tr.org.liderahenk.lider.core.api.plugin.ICommand;
+import tr.org.liderahenk.lider.core.api.plugin.IPluginInfo;
+import tr.org.liderahenk.lider.core.api.rest.requests.ITaskRequest;
 import tr.org.liderahenk.lider.core.api.service.ICommandContext;
 import tr.org.liderahenk.lider.core.api.service.ICommandResult;
 import tr.org.liderahenk.lider.core.api.service.ICommandResultFactory;
 import tr.org.liderahenk.lider.core.api.service.enums.CommandResultStatus;
 
-public class ResourceUsageAlertCommand implements ICommand, ITaskAwareCommand{
+public class ResourceUsageAlertCommand implements ICommand{
 
 	private Logger logger = LoggerFactory.getLogger(ResourceUsageAlertCommand.class);
 	
@@ -86,29 +78,6 @@ public class ResourceUsageAlertCommand implements ICommand, ITaskAwareCommand{
 		this.pluginInfo = pluginInfo;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void onTaskUpdate(ICommandExecutionResult result) {
-		Map<String, Object> responseData;
-		try {
-			responseData = new ObjectMapper().readValue(result.getResponseData(), 0, result.getResponseData().length,
-					new TypeReference<HashMap<String, Object>>() {
-			});
-		    List<String> resultList = (List<String>) responseData.get("Result");
-		    for(int i = 0 ; i <= resultList.size()/2 ; i=i+2){
-				List<String> to = new ArrayList<String>();
-				to.add(resultList.get(i+1));
-				getMailService().sendMail(to, "Ahenk Makinada Limit Değerler Aşıldı!", resultList.get(i));
-		    }
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public IMailService getMailService() {
 		return mailService;
 	}
@@ -116,5 +85,36 @@ public class ResourceUsageAlertCommand implements ICommand, ITaskAwareCommand{
 	public void setMailService(IMailService mailService) {
 		this.mailService = mailService;
 	}
+
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public void onTaskUpdate(ICommandExecutionResult result) {
+//		Map<String, Object> responseData;
+//		try {
+//			responseData = new ObjectMapper().readValue(result.getResponseData(), 0, result.getResponseData().length,
+//					new TypeReference<HashMap<String, Object>>() {
+//			});
+//		    List<String> resultList = (List<String>) responseData.get("Result");
+//		    for(int i = 0 ; i <= resultList.size()/2 ; i=i+2){
+//				List<String> to = new ArrayList<String>();
+//				to.add(resultList.get(i+1));
+//				getMailService().sendMail(to, "Ahenk Makinada Limit Değerler Aşıldı!", resultList.get(i));
+//		    }
+//		} catch (JsonParseException e) {
+//			e.printStackTrace();
+//		} catch (JsonMappingException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+
+//	public IMailService getMailService() {
+//		return mailService;
+//	}
+//
+//	public void setMailService(IMailService mailService) {
+//		this.mailService = mailService;
+//	}
 	
 }
