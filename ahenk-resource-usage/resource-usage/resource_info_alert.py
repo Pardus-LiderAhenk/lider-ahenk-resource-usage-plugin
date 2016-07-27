@@ -47,7 +47,6 @@ class ResourceUsage(AbstractPlugin):
 
     def run_timer(self, interval, task_id):
         while self.is_running:
-            print('sa')
             self.gather_resource_usage(task_id)
             time.sleep(interval)
 
@@ -62,14 +61,11 @@ class ResourceUsage(AbstractPlugin):
         cpu_percentage = psutil.cpu_percent(interval=1, percpu=True)
         self.logger.debug("[RESOURCE USAGE] CPU percentage: {0}".format(cpu_percentage))
 
-        d = {}
-        d['memoryUsage'] = str(memory_usage)
-        d['diskUsage'] = str(disk_usage)
-        d['cpuPercentage'] = str(cpu_percentage)
-
-        command = 'python3 /home/cemre/git/ahenk/opt/ahenk/ahenkd.py send -t {0} -m ""{1}"" -s'.format(task_id,
-                                                                                                     json.dumps(str(d)))
-        print(command)
+        data = {}
+        data['memoryUsage'] = str(memory_usage)
+        data['diskUsage'] = str(disk_usage)
+        data['cpuPercentage'] = str(cpu_percentage)
+        command = 'python3 /opt/ahenk/ahenkd.py send -t {0} -m {1} -s'.format(task_id, json.dumps(str(data)))
         result_code, p_out, p_err = self.execute(command)
         if result_code != 0:
             self.logger.error("[PACKAGE MANAGER] Error occurred while sending message: " + str(p_err))
