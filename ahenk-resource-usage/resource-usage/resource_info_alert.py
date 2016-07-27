@@ -8,6 +8,7 @@ from base.model.enum.ContentType import ContentType
 from threading import Thread
 import time
 import psutil
+import json
 
 
 class ResourceUsage(AbstractPlugin):
@@ -26,7 +27,6 @@ class ResourceUsage(AbstractPlugin):
             self.logger.debug("[RESOURCE USAGE] Action: {0}".format(action))
 
             if action == "start_timer":
-                self.gather_resource_usage()
                 self.is_running = True
                 self._threadCep = Thread(target=self.run_timer,
                                          args=(int(self.data['interval']), self.context.get('task_id')))
@@ -36,9 +36,9 @@ class ResourceUsage(AbstractPlugin):
                                              content_type=ContentType.APPLICATION_JSON.value)
             elif action == "stop_timer":
                 self.is_running = False
-                self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
-                                             message='Kaynak kullanım bilgilerinin toplanması durduruldu.',
-                                             content_type=ContentType.APPLICATION_JSON.value)
+                #     self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
+                #                                  message='Kaynak kullanım bilgilerinin toplanması durduruldu.',
+                #                                  content_type=ContentType.APPLICATION_JSON.value)
         except Exception as e:
             self.logger.error(str(e))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,
@@ -47,6 +47,7 @@ class ResourceUsage(AbstractPlugin):
 
     def run_timer(self, interval, task_id):
         while self.is_running:
+            print('sa')
             self.gather_resource_usage(task_id)
             time.sleep(interval)
 
@@ -61,7 +62,14 @@ class ResourceUsage(AbstractPlugin):
         cpu_percentage = psutil.cpu_percent(interval=1, percpu=True)
         self.logger.debug("[RESOURCE USAGE] CPU percentage: {0}".format(cpu_percentage))
 
-        command = 'python3 /opt/ahenk/ahenkd.py send -t {0} -m "{{ \'memoryUsage\': {1}, \'diskUsage\': {2}, \'cpuPercentage\': {3} }}"'.format(task_id, memory_usage, disk_usage, cpu_percentage)
+        d = {}
+        d['memoryUsage'] = str(memory_usage)
+        d['diskUsage'] = str(disk_usage)
+        d['cpuPercentage'] = str(cpu_percentage)
+
+        command = 'python3 /home/cemre/git/ahenk/opt/ahenk/ahenkd.py send -t {0} -m ""{1}"" -s'.format(task_id,
+                                                                                                     json.dumps(str(d)))
+        print(command)
         result_code, p_out, p_err = self.execute(command)
         if result_code != 0:
             self.logger.error("[PACKAGE MANAGER] Error occurred while sending message: " + str(p_err))

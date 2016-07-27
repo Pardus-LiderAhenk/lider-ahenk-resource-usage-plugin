@@ -1,5 +1,11 @@
 package tr.org.liderahenk.resourceusage.tabs;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -20,11 +26,43 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
+import tr.org.liderahenk.liderconsole.core.ldap.enums.DNType;
+import tr.org.liderahenk.liderconsole.core.rest.requests.TaskRequest;
+import tr.org.liderahenk.liderconsole.core.rest.utils.TaskRestUtils;
 import tr.org.liderahenk.liderconsole.core.utils.SWTResourceManager;
+import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
+import tr.org.liderahenk.resourceusage.constants.ResourceUsageConstants;
 import tr.org.liderahenk.resourceusage.i18n.Messages;
 import tr.org.liderahenk.resourceusage.model.ResourceUsageTableItem;
 
 public class DataListTab implements IUsageTab {
+
+	private String pluginVersion;
+	private String pluginName;
+	private Set<String> dnSet;
+	public String getPluginVersion() {
+		return pluginVersion;
+	}
+
+	public void setPluginVersion(String pluginVersion) {
+		this.pluginVersion = pluginVersion;
+	}
+
+	public String getPluginName() {
+		return pluginName;
+	}
+
+	public void setPluginName(String pluginName) {
+		this.pluginName = pluginName;
+	}
+
+	public Set<String> getDnSet() {
+		return dnSet;
+	}
+
+	public void setDnSet(Set<String> dnSet) {
+		this.dnSet = dnSet;
+	}
 
 	private Label lblmemCpuUsageMonitoring;
 	private Label lblDataCollectionInterval;
@@ -64,7 +102,6 @@ public class DataListTab implements IUsageTab {
 	
 	private final String[] sendMailArray = new String[] { "SEND_MAIL", "SEND_CRITICAL_MAIL" };
 	
-	@Override
 	public void createInputs(Composite tabComposite) throws Exception {
 		
 		Composite group = new Composite(tabComposite, SWT.NONE);
@@ -239,8 +276,9 @@ public class DataListTab implements IUsageTab {
 		btnFloatingAverage.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
-
+				validateBeforeSave();
+				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.START_TIMER);
+				executeTask(parameters);
 			}
 
 			@Override
@@ -254,8 +292,8 @@ public class DataListTab implements IUsageTab {
 		btnFixedAverage.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
-
+				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.STOP_TIMER);
+				executeTask(parameters);
 			}
 
 			@Override
@@ -284,12 +322,14 @@ public class DataListTab implements IUsageTab {
 
 		txtMemoryUsagePattern = new Text(informationObjectsComposite, SWT.BORDER);
 		txtMemoryUsagePattern.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		txtMemoryUsagePattern.setEnabled(false);
 		
 		lblCpuUsagePattern = new Label(informationObjectsComposite, SWT.NONE);
 		lblCpuUsagePattern.setText(Messages.getString("CPU_USAGE_PATTERN"));
 
 		txtCpuUsagePattern = new Text(informationObjectsComposite, SWT.BORDER);
 		txtCpuUsagePattern.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		txtCpuUsagePattern.setEnabled(false);
 		
 		lblWindowLength = new Label(informationObjectsComposite, SWT.NONE);
 		lblWindowLength.setText(Messages.getString("WINDOW_LENGTH"));
@@ -386,7 +426,65 @@ public class DataListTab implements IUsageTab {
 	
 	@Override
 	public void validateBeforeSave() throws ValidationException {
-		
+		if(txtDataCollectionInterval == null || txtDataCollectionInterval.getText().isEmpty())
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+		if(txtRules1 == null || txtRules1.getText().isEmpty())
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+		if(txtRules2 == null || txtRules2.getText().isEmpty())
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+		if(txtRules3 == null || txtRules3.getText().isEmpty())
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+		if(txtRules4 == null || txtRules4.getText().isEmpty())
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+		if(txtRules5 == null || txtRules5.getText().isEmpty())
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+		if(txtRules6 == null || txtRules6.getText().isEmpty())
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+		if(txtMailAddress == null || txtMailAddress.getText().isEmpty())
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+	}
+	
+
+	private void executeTask(Map<String, Object> parameters) {
+		try {
+			TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK, getPluginName(),
+					getPluginVersion(), "RESOURCE_INFO_ALERT", parameters, null, new Date());
+			TaskRestUtils.execute(task);
+		} catch (Exception e1) {
+			Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
+		}
 	}
 
+	private Map<String, Object> getParameterMap(String averageTypeSelection) {
+		Map<String, Object> taskData = new HashMap<String, Object>();
+		try {
+			if(averageTypeSelection.equals(ResourceUsageConstants.START_TIMER)){
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.DATA_COLLECTION_INTERVAL, txtDataCollectionInterval.getText());
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_USAGE_PERCENTAGE, txtRules1.getText());
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_ALERT_COUNT, txtRules2.getText());
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_ALERT_TIME_PERIOD, txtRules3.getText());
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_USAGE_PERCENTAGE, txtRules4.getText());
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_ALERT_COUNT, txtRules5.getText());
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_ALERT_TIME_PERIOD, txtRules6.getText());
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_USAGE_DECISION, cmb1.getItem(cmb1.getSelectionIndex()));
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_ALERT_ANALYSIS_DECISION, cmb2.getItem(cmb2.getSelectionIndex()));
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_USAGE_DECISION, cmb3.getItem(cmb3.getSelectionIndex()));
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_ALERT_ANALYSIS_DECISION, cmb4.getItem(cmb4.getSelectionIndex()));
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MAIL_ADDRESS, txtMailAddress.getText());
+			}
+			taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.AVERAGE_TYPE_SELECTION, averageTypeSelection);
+		} catch (Exception e1) {
+			Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
+		}
+		return taskData;
+	}
+
+	@Override
+	public void createTab(Composite tabComposite, Set<String> dnSet, String pluginName, String pluginVersion)
+			throws Exception {
+		setDnSet(dnSet);
+		setPluginName(pluginName);
+		setPluginVersion(pluginVersion);
+		createInputs(tabComposite);
+	}
 }

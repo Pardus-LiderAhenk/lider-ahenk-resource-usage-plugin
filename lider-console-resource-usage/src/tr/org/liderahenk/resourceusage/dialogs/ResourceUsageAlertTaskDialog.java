@@ -1,8 +1,16 @@
 package tr.org.liderahenk.resourceusage.dialogs;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -14,13 +22,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tr.org.liderahenk.liderconsole.core.dialogs.DefaultTaskDialog;
 import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
+import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
+import tr.org.liderahenk.liderconsole.core.xmpp.notifications.TaskStatusNotification;
 import tr.org.liderahenk.resourceusage.constants.ResourceUsageConstants;
 import tr.org.liderahenk.resourceusage.i18n.Messages;
+import tr.org.liderahenk.resourceusage.model.ResourceUsageTableItem;
 import tr.org.liderahenk.resourceusage.tabs.AlertListTab;
 import tr.org.liderahenk.resourceusage.tabs.DataListTab;
 
@@ -40,7 +53,7 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 		super(parentShell, dnString);
 		this.dataList = new DataListTab();
 		this.alarmList = new AlertListTab();
-
+		subscribeEventHandler(eventHandler);
 	}
 	
 	@Override
@@ -60,9 +73,9 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 			composite.setLayout(new GridLayout(1, false));
 			CTabFolder tabFolder = createTabFolder(composite);
 			tabFolder.setSize(1300,500);
-			dataList.createInputs(createInputTab(tabFolder, Messages.getString("DATA_LIST"), true));
+			dataList.createTab(createInputTab(tabFolder, Messages.getString("DATA_LIST"), true), getDnSet(), getPluginName(), getPluginVersion());
 
-			alarmList.createInputs(createInputTab(tabFolder, Messages.getString("ALERT_LIST"), true));
+			alarmList.createTab(createInputTab(tabFolder, Messages.getString("ALERT_LIST"), true), getDnSet(), getPluginName(), getPluginVersion());
 			
 			tabFolder.setSelection(0);
 		} catch (Exception e) {
@@ -107,9 +120,58 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 	public String getPluginVersion() {
 		return ResourceUsageConstants.PLUGIN_VERSION;
 	}
-//
-//	@Override
+
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.CANCEL_ID, Messages.getString("CANCEL"), true);
 	}
+	
+
+
+	private EventHandler eventHandler = new EventHandler() {
+		@Override
+		public void handleEvent(final Event event) {
+			Job job = new Job("TASK") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					monitor.beginTask("RESOURCE_INFO_ALERT", 100);
+					try {
+						TaskStatusNotification taskStatus = (TaskStatusNotification) event
+								.getProperty("org.eclipse.e4.data");
+						byte[] data = taskStatus.getResult().getResponseData();
+						final Map<String, Object> responseData = new ObjectMapper().readValue(data, 0, data.length,
+								new TypeReference<HashMap<String, Object>>() {
+						});
+						Display.getDefault().asyncExec(new Runnable() {
+
+							@Override
+							public void run() {
+								String[] result = responseData.containsKey("packageSource")
+										? responseData.get("packageSource").toString().split("\\r?\\n") : null;
+								if (result != null && result.length > 0) {
+									ArrayList<ResourceUsageTableItem> items = new ArrayList<>();
+									for (String data : result) {
+										ResourceUsageTableItem item = new ResourceUsageTableItem();
+										items.add(item);
+									}
+									if (items != null){
+										
+									}
+//										tableViewer.setInput(items);
+								}
+							}
+						});
+					} catch (Exception e) {
+						Notifier.error("", Messages.getString("UNEXPECTED_ERROR_ACCESSING_RESOURCE_USAGE"));
+					}
+					monitor.worked(100);
+					monitor.done();
+
+					return Status.OK_STATUS;
+				}
+			};
+
+			job.setUser(true);
+			job.schedule();
+		}
+	};
 }

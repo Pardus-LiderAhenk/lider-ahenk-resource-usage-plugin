@@ -1,5 +1,7 @@
 package tr.org.liderahenk.resourceusage.tabs;
 
+import java.util.Set;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -22,8 +24,32 @@ public class AlertListTab implements IUsageTab {
 
 	private Label lblAlertList;
 	private TableViewer tableViewer;
-	
-	@Override
+	private String pluginVersion;
+	private String pluginName;
+	private Set<String> dnSet;
+	public String getPluginVersion() {
+		return pluginVersion;
+	}
+
+	public void setPluginVersion(String pluginVersion) {
+		this.pluginVersion = pluginVersion;
+	}
+
+	public String getPluginName() {
+		return pluginName;
+	}
+
+	public void setPluginName(String pluginName) {
+		this.pluginName = pluginName;
+	}
+
+	public Set<String> getDnSet() {
+		return dnSet;
+	}
+
+	public void setDnSet(Set<String> dnSet) {
+		this.dnSet = dnSet;
+	}
 	public void createInputs(Composite tabComposite) throws Exception {
 		
 		Composite  alertListcomposite = new Composite(tabComposite, SWT.BORDER);
@@ -147,6 +173,15 @@ public class AlertListTab implements IUsageTab {
 	@Override
 	public void validateBeforeSave() throws ValidationException {
 		
+	}
+
+	@Override
+	public void createTab(Composite tabComposite, Set<String> dnSet, String pluginName, String pluginVersion)
+			throws Exception {
+		setDnSet(dnSet);
+		setPluginName(pluginName);
+		setPluginVersion(pluginVersion);
+		createInputs(tabComposite);
 	}
 
 }
