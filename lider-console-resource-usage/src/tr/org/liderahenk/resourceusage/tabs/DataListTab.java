@@ -460,17 +460,6 @@ public class DataListTab implements IUsageTab {
 		try {
 			if(averageTypeSelection.equals(ResourceUsageConstants.START_TIMER)){
 				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.DATA_COLLECTION_INTERVAL, txtDataCollectionInterval.getText());
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_USAGE_PERCENTAGE, txtRules1.getText());
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_ALERT_COUNT, txtRules2.getText());
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_ALERT_TIME_PERIOD, txtRules3.getText());
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_USAGE_PERCENTAGE, txtRules4.getText());
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_ALERT_COUNT, txtRules5.getText());
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_ALERT_TIME_PERIOD, txtRules6.getText());
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_USAGE_DECISION, cmb1.getItem(cmb1.getSelectionIndex()));
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MEMORY_ALERT_ANALYSIS_DECISION, cmb2.getItem(cmb2.getSelectionIndex()));
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_USAGE_DECISION, cmb3.getItem(cmb3.getSelectionIndex()));
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.CPU_ALERT_ANALYSIS_DECISION, cmb4.getItem(cmb4.getSelectionIndex()));
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.MAIL_ADDRESS, txtMailAddress.getText());
 			}
 			taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.AVERAGE_TYPE_SELECTION, averageTypeSelection);
 		} catch (Exception e1) {
