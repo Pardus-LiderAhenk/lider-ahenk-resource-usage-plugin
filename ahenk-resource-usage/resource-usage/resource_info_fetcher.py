@@ -45,8 +45,7 @@ class ResourceUsage(AbstractPlugin):
         except Exception as e:
             self.logger.error(str(e))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,
-                                         message='Anlık kaynak kullanım bilgisi toplanırken hata oluştu:' + str(e),
-                                         content_type=ContentType.APPLICATION_JSON.value)
+                                         message='Anlık kaynak kullanım bilgisi toplanırken hata oluştu:' + str(e))
 
 
 def handle_task(task, context):

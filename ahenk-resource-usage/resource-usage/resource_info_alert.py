@@ -32,8 +32,7 @@ class ResourceUsage(AbstractPlugin):
                                          args=(int(self.data['interval']), self.context.get('task_id')))
                 self._threadCep.start()
                 self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
-                                             message='Kaynak kullanım bilgileri toplanmaya başlandı.',
-                                             content_type=ContentType.APPLICATION_JSON.value)
+                                             message='Kaynak kullanım bilgileri toplanmaya başlandı.')
             elif action == "stop_timer":
                 self.is_running = False
                 #     self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
@@ -42,8 +41,7 @@ class ResourceUsage(AbstractPlugin):
         except Exception as e:
             self.logger.error(str(e))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,
-                                         message='Kaynak kullanım bilgileri işlenirken hata oluştu: ' + str(e),
-                                         content_type=ContentType.APPLICATION_JSON.value)
+                                         message='Kaynak kullanım bilgileri işlenirken hata oluştu: ' + str(e))
 
     def run_timer(self, interval, task_id):
         while self.is_running:
