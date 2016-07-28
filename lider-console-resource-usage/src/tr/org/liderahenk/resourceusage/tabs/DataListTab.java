@@ -14,6 +14,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormData;
@@ -22,9 +24,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
@@ -43,6 +48,7 @@ public class DataListTab implements IUsageTab {
 	private String pluginName;
 	private Set<String> dnSet;
 	private ArrayList<ResourceUsageTableItem> items = new ArrayList<>();
+
 	public String getPluginVersion() {
 		return pluginVersion;
 	}
@@ -102,57 +108,70 @@ public class DataListTab implements IUsageTab {
 	private Label lblWindowLength;
 	private Text txtWindowLength;
 	private TableViewer tableViewer;
-	
+
 	private final String[] sendMailArray = new String[] { "SEND_MAIL", "SEND_CRITICAL_MAIL" };
-	
-	public void createInputs(Composite tabComposite) throws Exception {
+	KeyListener numericTextListener = new KeyListener() {
 		
+		@Override
+		public void keyReleased(KeyEvent e) {
+		}
+		
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (!('0' <= e.character && e.character <= '9')) 
+				e.doit = false;
+			
+		}
+	};
+	public void createInputs(Composite tabComposite) throws Exception {
+
 		Composite group = new Composite(tabComposite, SWT.NONE);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false);
 		group.setLayout(new GridLayout(2, false));
 		group.setLayoutData(gridData);
-		
-		Composite  memoryCpuUsageMonitoring = new Composite(group, SWT.BORDER);
+
+		Composite memoryCpuUsageMonitoring = new Composite(group, SWT.BORDER);
 		GridData memCpuGd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		memCpuGd.widthHint = 900;
 		memoryCpuUsageMonitoring.setLayoutData(memCpuGd);
 		memoryCpuUsageMonitoring.setLayout(new GridLayout(1, false));
-		
+
 		FormData fd = new FormData();
 		fd.width = 50;
-		
+
 		lblmemCpuUsageMonitoring = new Label(memoryCpuUsageMonitoring, SWT.NONE);
 		lblmemCpuUsageMonitoring.setFont(SWTResourceManager.getFont("Sans", 9, SWT.BOLD));
 		lblmemCpuUsageMonitoring.setText(Messages.getString("MEM_CPU_USAGE_MONITORING"));
 
-		
-		Composite  dataCollectionIntervalComposite = new Composite(memoryCpuUsageMonitoring, SWT.NONE);
+		Composite dataCollectionIntervalComposite = new Composite(memoryCpuUsageMonitoring, SWT.NONE);
 		dataCollectionIntervalComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		dataCollectionIntervalComposite.setLayout(new GridLayout(2, false));
-		
+
 		lblDataCollectionInterval = new Label(dataCollectionIntervalComposite, SWT.NONE);
 		lblDataCollectionInterval.setText(Messages.getString("DATA_COLLECTION_INTERVAL"));
 
 		txtDataCollectionInterval = new Text(dataCollectionIntervalComposite, SWT.BORDER);
-		txtDataCollectionInterval.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		
-		Composite  rulesComposite = new Composite(memoryCpuUsageMonitoring, SWT.BORDER);
+		txtDataCollectionInterval.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+		txtDataCollectionInterval.addKeyListener(numericTextListener);
+
+		Composite rulesComposite = new Composite(memoryCpuUsageMonitoring, SWT.BORDER);
 		rulesComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		rulesComposite.setLayout(new GridLayout(1, false));
-		
+
 		lblRules = new Label(rulesComposite, SWT.NONE);
 		lblRules.setText(Messages.getString("RULES"));
-		
-		Composite  rules1Composite = new Composite(rulesComposite, SWT.NONE);
+
+		Composite rules1Composite = new Composite(rulesComposite, SWT.NONE);
 		rules1Composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		rules1Composite.setLayout(new GridLayout(4, false));
-		
+
 		lblRules1 = new Label(rules1Composite, SWT.RIGHT);
 		lblRules1.setText(Messages.getString("RULES1"));
 
 		txtRules1 = new Text(rules1Composite, SWT.BORDER);
 		txtRules1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		
+		txtRules1.addKeyListener(numericTextListener);
+
 		lblRules2 = new Label(rules1Composite, SWT.LEFT);
 		lblRules2.setText(Messages.getString("RULES2"));
 
@@ -168,23 +187,25 @@ public class DataListTab implements IUsageTab {
 			}
 		}
 		cmb1.select(0);
-		
-		Composite  rules2Composite = new Composite(rulesComposite, SWT.NONE);
+
+		Composite rules2Composite = new Composite(rulesComposite, SWT.NONE);
 		rules2Composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		rules2Composite.setLayout(new GridLayout(6, false));
-		
+
 		lblRules3 = new Label(rules2Composite, SWT.RIGHT);
 		lblRules3.setText(Messages.getString("RULES3"));
 
 		txtRules2 = new Text(rules2Composite, SWT.BORDER);
 		txtRules2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		
+		txtRules2.addKeyListener(numericTextListener);
+
 		lblRules4 = new Label(rules2Composite, SWT.NONE);
 		lblRules4.setText(Messages.getString("RULES4"));
 
 		txtRules3 = new Text(rules2Composite, SWT.BORDER);
 		txtRules3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		
+		txtRules3.addKeyListener(numericTextListener);
+
 		lblRules5 = new Label(rules2Composite, SWT.LEFT);
 		lblRules5.setText(Messages.getString("RULES5"));
 
@@ -198,17 +219,18 @@ public class DataListTab implements IUsageTab {
 			}
 		}
 		cmb2.select(0);
-		
-		Composite  rules3Composite = new Composite(rulesComposite, SWT.NONE);
+
+		Composite rules3Composite = new Composite(rulesComposite, SWT.NONE);
 		rules3Composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		rules3Composite.setLayout(new GridLayout(4, false));
-		
+
 		lblRules6 = new Label(rules3Composite, SWT.RIGHT);
 		lblRules6.setText(Messages.getString("RULES6"));
 
 		txtRules4 = new Text(rules3Composite, SWT.BORDER);
 		txtRules4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		
+		txtRules4.addKeyListener(numericTextListener);
+
 		lblRules7 = new Label(rules3Composite, SWT.LEFT);
 		lblRules7.setText(Messages.getString("RULES7"));
 
@@ -222,23 +244,25 @@ public class DataListTab implements IUsageTab {
 			}
 		}
 		cmb3.select(0);
-		
-		Composite  rules4Composite = new Composite(rulesComposite, SWT.NONE);
+
+		Composite rules4Composite = new Composite(rulesComposite, SWT.NONE);
 		rules4Composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		rules4Composite.setLayout(new GridLayout(6, false));
-		
+
 		lblRules8 = new Label(rules4Composite, SWT.RIGHT);
 		lblRules8.setText(Messages.getString("RULES8"));
 
 		txtRules5 = new Text(rules4Composite, SWT.BORDER);
 		txtRules5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		
+		txtRules5.addKeyListener(numericTextListener);
+
 		lblRules9 = new Label(rules4Composite, SWT.NONE);
 		lblRules9.setText(Messages.getString("RULES9"));
 
 		txtRules6 = new Text(rules4Composite, SWT.BORDER);
 		txtRules6.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		
+		txtRules6.addKeyListener(numericTextListener);
+
 		lblRules10 = new Label(rules4Composite, SWT.LEFT);
 		lblRules10.setText(Messages.getString("RULES10"));
 		cmb4 = new Combo(rules4Composite, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -251,23 +275,23 @@ public class DataListTab implements IUsageTab {
 			}
 		}
 		cmb4.select(0);
-		
-		Composite  actionInfoComposite = new Composite(memoryCpuUsageMonitoring, SWT.BORDER);
+
+		Composite actionInfoComposite = new Composite(memoryCpuUsageMonitoring, SWT.BORDER);
 		actionInfoComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		actionInfoComposite.setLayout(new GridLayout(2, false));
-		
+
 		lblRules1 = new Label(actionInfoComposite, SWT.NONE);
 		lblRules1.setText(Messages.getString("ACTION_INFORMATION"));
-		
+
 		lblRules1 = new Label(actionInfoComposite, SWT.NONE);
-		
+
 		lblMailAddress = new Label(actionInfoComposite, SWT.NONE);
 		lblMailAddress.setText(Messages.getString("MAIL_ADDRESS"));
 
 		txtMailAddress = new Text(actionInfoComposite, SWT.BORDER);
 		txtMailAddress.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
-		Composite  optionsComposite = new Composite(memoryCpuUsageMonitoring, SWT.NONE);
+
+		Composite optionsComposite = new Composite(memoryCpuUsageMonitoring, SWT.NONE);
 		optionsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		optionsComposite.setLayout(new GridLayout(2, false));
 
@@ -280,8 +304,10 @@ public class DataListTab implements IUsageTab {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				validateBeforeSave();
+				removeTableItems();
 				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.START_TIMER);
 				executeTask(parameters);
+				cleanUpAverageTexts();
 			}
 
 			@Override
@@ -297,49 +323,48 @@ public class DataListTab implements IUsageTab {
 			public void widgetSelected(SelectionEvent e) {
 				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.STOP_TIMER);
 				executeTask(parameters);
+				setAverageLabels();
+				manageAlerts();
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
-		
-		
+
 		Composite informationObjects = new Composite(group, SWT.BORDER);
 		memoryCpuUsageMonitoring.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		informationObjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		informationObjects.setLayout(new GridLayout(1, false));
 
-		
 		lblmemCpuUsageMonitoring = new Label(informationObjects, SWT.NONE);
 		lblmemCpuUsageMonitoring.setFont(SWTResourceManager.getFont("Sans", 9, SWT.BOLD));
 		lblmemCpuUsageMonitoring.setText(Messages.getString("INFORMATION_OBJECTS"));
-		
-		Composite  informationObjectsComposite = new Composite(informationObjects, SWT.NONE);
+
+		Composite informationObjectsComposite = new Composite(informationObjects, SWT.NONE);
 		informationObjectsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		informationObjectsComposite.setLayout(new GridLayout(2, false));
-		
+
 		lblMemoryUsagePattern = new Label(informationObjectsComposite, SWT.NONE);
 		lblMemoryUsagePattern.setText(Messages.getString("MEMORY_USAGE_PATTERN"));
 
 		txtMemoryUsagePattern = new Text(informationObjectsComposite, SWT.BORDER);
 		txtMemoryUsagePattern.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		txtMemoryUsagePattern.setEnabled(false);
-		
+
 		lblCpuUsagePattern = new Label(informationObjectsComposite, SWT.NONE);
 		lblCpuUsagePattern.setText(Messages.getString("CPU_USAGE_PATTERN"));
 
 		txtCpuUsagePattern = new Text(informationObjectsComposite, SWT.BORDER);
 		txtCpuUsagePattern.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		txtCpuUsagePattern.setEnabled(false);
-		
+
 		lblWindowLength = new Label(informationObjectsComposite, SWT.NONE);
 		lblWindowLength.setText(Messages.getString("WINDOW_LENGTH"));
 
 		txtWindowLength = new Text(informationObjectsComposite, SWT.BORDER);
 		txtWindowLength.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		
+
 		createTable(informationObjectsComposite);
 
 		((ScrolledComposite) tabComposite).setContent(group);
@@ -347,9 +372,54 @@ public class DataListTab implements IUsageTab {
 		((ScrolledComposite) tabComposite).setExpandVertical(true);
 		((ScrolledComposite) tabComposite).setExpandHorizontal(true);
 		((ScrolledComposite) tabComposite).setMinSize(group.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		
+
 	}
 
+	private void cleanUpAverageTexts(){
+
+		txtMemoryUsagePattern.setText("");
+		txtMemoryUsagePattern.pack();
+
+		txtCpuUsagePattern.setText("");
+		txtCpuUsagePattern.pack();
+	}
+	private void setAverageLabels() {
+		TableItem[] tableItems = tableViewer.getTable().getItems();
+		double averageMemUsage = 0;
+		double averageCpuUsage = 0;
+		for (TableItem tableItem : tableItems) {
+			averageMemUsage += Double.parseDouble(tableItem.getText(1));
+			averageCpuUsage += Double.parseDouble(tableItem.getText(2));
+		}
+		averageMemUsage = averageMemUsage / tableItems.length;
+		averageCpuUsage = averageCpuUsage / tableItems.length;
+
+		txtMemoryUsagePattern.setText(String.valueOf(averageMemUsage));
+		txtMemoryUsagePattern.pack();
+
+		txtCpuUsagePattern.setText(String.valueOf(averageCpuUsage));
+		txtCpuUsagePattern.pack();
+	}
+
+	private void manageAlerts() {
+		TableItem[] tableItems = tableViewer.getTable().getItems();
+		double memAlertCount = 0;
+		double cpuAlertCount = 0;
+		for (TableItem tableItem : tableItems) {
+			if(Double.parseDouble(txtRules1.getText().toString()) <= Double.parseDouble(tableItem.getText(1))){
+				
+			}
+		}
+//		averageMemUsage = averageMemUsage / tableItems.length;
+//		averageCpuUsage = averageCpuUsage / tableItems.length;
+//
+//		txtMemoryUsagePattern.setText(String.valueOf(averageMemUsage));
+//		txtMemoryUsagePattern.pack();
+//
+//		txtCpuUsagePattern.setText(String.valueOf(averageCpuUsage));
+//		txtCpuUsagePattern.pack();
+	}
+	
 	private void createTable(final Composite parent) {
 		tableViewer = new TableViewer(parent,
 				SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
@@ -377,8 +447,9 @@ public class DataListTab implements IUsageTab {
 
 	private void createTableColumns() {
 
-		String[] titles = { Messages.getString("RECORD_DATE"), Messages.getString("MEM_USED"), Messages.getString("CPU_USED") };
-		int[] bounds = { 140, 140, 140};
+		String[] titles = { Messages.getString("RECORD_DATE"), Messages.getString("MEM_USED"),
+				Messages.getString("CPU_USED") };
+		int[] bounds = { 170, 140, 140 };
 
 		TableViewerColumn recordDateColumn = createTableViewerColumn(titles[0], bounds[0]);
 		recordDateColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -414,7 +485,6 @@ public class DataListTab implements IUsageTab {
 		});
 	}
 
-
 	private TableViewerColumn createTableViewerColumn(String title, int bound) {
 		final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
 		final TableColumn column = viewerColumn.getColumn();
@@ -425,28 +495,26 @@ public class DataListTab implements IUsageTab {
 		column.setAlignment(SWT.LEFT);
 		return viewerColumn;
 	}
-	
-	
+
 	@Override
 	public void validateBeforeSave() throws ValidationException {
-		if(txtDataCollectionInterval == null || txtDataCollectionInterval.getText().isEmpty())
+		if (txtDataCollectionInterval == null || txtDataCollectionInterval.getText().isEmpty())
 			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if(txtRules1 == null || txtRules1.getText().isEmpty())
+		if (txtRules1 == null || txtRules1.getText().isEmpty())
 			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if(txtRules2 == null || txtRules2.getText().isEmpty())
+		if (txtRules2 == null || txtRules2.getText().isEmpty())
 			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if(txtRules3 == null || txtRules3.getText().isEmpty())
+		if (txtRules3 == null || txtRules3.getText().isEmpty())
 			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if(txtRules4 == null || txtRules4.getText().isEmpty())
+		if (txtRules4 == null || txtRules4.getText().isEmpty())
 			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if(txtRules5 == null || txtRules5.getText().isEmpty())
+		if (txtRules5 == null || txtRules5.getText().isEmpty())
 			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if(txtRules6 == null || txtRules6.getText().isEmpty())
+		if (txtRules6 == null || txtRules6.getText().isEmpty())
 			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if(txtMailAddress == null || txtMailAddress.getText().isEmpty())
+		if (txtMailAddress == null || txtMailAddress.getText().isEmpty())
 			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
 	}
-	
 
 	private void executeTask(Map<String, Object> parameters) {
 		try {
@@ -461,8 +529,9 @@ public class DataListTab implements IUsageTab {
 	private Map<String, Object> getParameterMap(String averageTypeSelection) {
 		Map<String, Object> taskData = new HashMap<String, Object>();
 		try {
-			if(averageTypeSelection.equals(ResourceUsageConstants.START_TIMER)){
-				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.DATA_COLLECTION_INTERVAL, txtDataCollectionInterval.getText());
+			if (averageTypeSelection.equals(ResourceUsageConstants.START_TIMER)) {
+				taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.DATA_COLLECTION_INTERVAL,
+						txtDataCollectionInterval.getText());
 			}
 			taskData.put(ResourceUsageConstants.DATA_LIST_PARAMETERS.AVERAGE_TYPE_SELECTION, averageTypeSelection);
 		} catch (Exception e1) {
@@ -480,14 +549,24 @@ public class DataListTab implements IUsageTab {
 		createInputs(tabComposite);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void addTableItem(Object tableItem) {
 		ResourceUsageTableItem item = (ResourceUsageTableItem) tableItem;
+		String mem = item.getMemUsed();
+		String[] splittedMemUsage = mem.split(",");
+		String[] splittedDiskPercentage = splittedMemUsage[2].split("=");
+		item.setMemUsed(splittedDiskPercentage[1]);
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
 		item.setRecordDate(dateFormat.format(date));
-		getItems().add(item);
-		tableViewer.setInput(getItems());
+		ArrayList<ResourceUsageTableItem> listItems = (ArrayList<ResourceUsageTableItem>) tableViewer.getInput();
+		if (listItems == null) {
+			listItems = new ArrayList<>();
+		}
+		listItems.add(item);
+		tableViewer.setInput(listItems);
+		tableViewer.refresh();
 	}
 
 	public ArrayList<ResourceUsageTableItem> getItems() {
@@ -496,5 +575,11 @@ public class DataListTab implements IUsageTab {
 
 	public void setItems(ArrayList<ResourceUsageTableItem> items) {
 		this.items = items;
+	}
+
+	@Override
+	public void removeTableItems() {
+		tableViewer.setInput(null);
+		tableViewer.refresh();
 	}
 }

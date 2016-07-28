@@ -28,6 +28,8 @@ class ResourceUsage(AbstractPlugin):
 
             if action == "start_timer":
                 self.is_running = True
+                with open('is_running.txt', 'w') as f:
+                    f.write("%s" % str('true'))
                 self._threadCep = Thread(target=self.run_timer,
                                          args=(int(self.data['interval']), self.context.get('task_id')))
                 self._threadCep.start()
@@ -36,9 +38,12 @@ class ResourceUsage(AbstractPlugin):
                                              content_type=ContentType.APPLICATION_JSON.value)
             elif action == "stop_timer":
                 self.is_running = False
-                #     self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
-                #                                  message='Kaynak kullanım bilgilerinin toplanması durduruldu.',
-                #                                  content_type=ContentType.APPLICATION_JSON.value)
+                with open('is_running.txt', 'w') as f:
+                    f.write("%s" % str('false'))
+                data = {"action": "stop"}
+                self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
+                                                 message='Kaynak kullanım bilgilerinin toplanması durduruldu.',
+                                                 data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
         except Exception as e:
             self.logger.error(str(e))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,
@@ -49,6 +54,9 @@ class ResourceUsage(AbstractPlugin):
         while self.is_running:
             self.gather_resource_usage(task_id)
             time.sleep(interval)
+            with open('is_running.txt', 'r') as f:
+                if f.read() == 'false':
+                    self.is_running = False
 
     def gather_resource_usage(self, task_id):
         # Memory usage
@@ -58,14 +66,14 @@ class ResourceUsage(AbstractPlugin):
         disk_usage = psutil.disk_usage('/')
         self.logger.debug("[RESOURCE USAGE] Disk usage: {0}".format(disk_usage))
         # CPU usage
-        cpu_percentage = psutil.cpu_percent(interval=1, percpu=True)
+        cpu_percentage = psutil.cpu_percent(interval=1)
         self.logger.debug("[RESOURCE USAGE] CPU percentage: {0}".format(cpu_percentage))
 
         data = {}
         data['memoryUsage'] = str(memory_usage)
         data['diskUsage'] = str(disk_usage)
         data['cpuPercentage'] = str(cpu_percentage)
-        command = 'python3 /opt/ahenk/ahenkd.py send -t {0} -m {1} -s'.format(task_id, json.dumps(str(data)))
+        command = 'python3 ahenkd.py send -t {0} -m {1} -s'.format(task_id, json.dumps(str(data)))
         result_code, p_out, p_err = self.execute(command)
         if result_code != 0:
             self.logger.error("[PACKAGE MANAGER] Error occurred while sending message: " + str(p_err))

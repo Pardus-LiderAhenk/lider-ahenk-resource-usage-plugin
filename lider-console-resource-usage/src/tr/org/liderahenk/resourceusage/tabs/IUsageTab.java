@@ -10,4 +10,5 @@ public interface IUsageTab {
 	public void createTab(Composite tabComposite, Set<String> dnSet, String pluginName, String pluginVersion) throws Exception;
 	public void validateBeforeSave() throws ValidationException;
 	public void addTableItem(Object tableItem);
+	public void removeTableItems();
 }
