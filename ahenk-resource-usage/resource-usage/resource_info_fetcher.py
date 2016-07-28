@@ -4,8 +4,6 @@
 # Author: Emre Akkaya <emre.akkaya@agem.com.tr>
 
 from base.plugin.abstract_plugin import AbstractPlugin
-from base.system.system import System
-from base.model.enum.ContentType import ContentType
 import json
 
 
@@ -21,31 +19,31 @@ class ResourceUsage(AbstractPlugin):
         try:
             device = ""
             self.logger.debug("[RESOURCE USAGE] Gathering resource usage for disk, memory and CPU.")
-            for part in System.Hardware.Disk.partitions():
+            for part in self.Hardware.Disk.partitions():
                 if len(device) != 0:
                     device += ", "
                 device = device + part.device
-            data = {'System': System.Os.name(), 'Release': System.Os.kernel_release(),
-                    'Version': System.Os.distribution_version(), 'Machine': System.Os.architecture(),
-                    'CPU Physical Core Count': System.Hardware.Cpu.physical_core_count(),
-                    'Total Memory': System.Hardware.Memory.total(),
-                    'Usage': System.Hardware.Memory.used(),
-                    'Total Disc': System.Hardware.Disk.total(),
-                    'Usage Disc': System.Hardware.Disk.used(),
-                    'Processor': System.Hardware.Cpu.brand(),
+            data = {'System': self.Os.name(), 'Release': self.Os.kernel_release(),
+                    'Version': self.Os.distribution_version(), 'Machine': self.Os.architecture(),
+                    'CPU Physical Core Count': self.Hardware.Cpu.physical_core_count(),
+                    'Total Memory': self.Hardware.Memory.total(),
+                    'Usage': self.Hardware.Memory.used(),
+                    'Total Disc': self.Hardware.Disk.total(),
+                    'Usage Disc': self.Hardware.Disk.used(),
+                    'Processor': self.Hardware.Cpu.brand(),
                     'Device': device,
-                    'CPU Logical Core Count': System.Hardware.Cpu.logical_core_count(),
-                    'CPU Actual Hz':  System.Hardware.Cpu.hz_actual(),
-                    'CPU Advertised Hz': System.Hardware.Cpu.hz_advertised()
+                    'CPU Logical Core Count': self.Hardware.Cpu.logical_core_count(),
+                    'CPU Actual Hz': self.Hardware.Cpu.hz_actual(),
+                    'CPU Advertised Hz': self.Hardware.Cpu.hz_advertised()
                     }
             self.logger.debug("[RESOURCE USAGE] Resource usage info gathered.")
             self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
                                          message='Anlık kaynak kullanım bilgisi başarıyla toplandı.',
-                                         data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
+                                         data=json.dumps(data), content_type=self.get_content_type().APPLICATION_JSON.value)
         except Exception as e:
             self.logger.error(str(e))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,
-                                         message='Anlık kaynak kullanım bilgisi toplanırken hata oluştu:' + str(e))
+                                         message='Anlık kaynak kullanım bilgisi toplanırken hata oluştu: {0}'.format(str(e)))
 
 
 def handle_task(task, context):
