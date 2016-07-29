@@ -16,4 +16,8 @@ public class ResourceUsageConstants {
 		public static final String DATA_COLLECTION_INTERVAL = "interval";
 		public static final String AVERAGE_TYPE_SELECTION = "action";
 	}
+	public static final class MAIL_PARAMETERS{
+		public static final String TO = "to";
+		public static final String BODY = "body";
+	}
 }

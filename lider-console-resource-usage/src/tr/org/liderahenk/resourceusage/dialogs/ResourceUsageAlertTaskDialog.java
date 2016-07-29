@@ -1,7 +1,9 @@
 package tr.org.liderahenk.resourceusage.dialogs;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -38,26 +40,25 @@ import tr.org.liderahenk.resourceusage.tabs.DataListTab;
  * Task execution dialog for resource-usage plugin.
  * 
  */
-public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
-	
-	private static final Logger logger = LoggerFactory.getLogger(ResourceUsageAlertTaskDialog.class);
+public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog {
 
+	private static final Logger logger = LoggerFactory.getLogger(ResourceUsageAlertTaskDialog.class);
 
 	private DataListTab dataList;
 	private AlertListTab alarmList;
-	
+
 	public ResourceUsageAlertTaskDialog(Shell parentShell, String dnString) {
 		super(parentShell, dnString);
 		this.dataList = new DataListTab();
 		this.alarmList = new AlertListTab();
 		subscribeEventHandler(eventHandler);
 	}
-	
+
 	@Override
 	public String createTitle() {
 		return Messages.getString("COMPLEX_EVENT_PROCESSING");
 	}
-	
+
 	@Override
 	public Control createTaskDialogArea(Composite parent) {
 		try {
@@ -69,18 +70,20 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 			composite.setLayoutData(gridData);
 			composite.setLayout(new GridLayout(1, false));
 			CTabFolder tabFolder = createTabFolder(composite);
-			tabFolder.setSize(1300,500);
-			dataList.createTab(createInputTab(tabFolder, Messages.getString("DATA_LIST"), true), getDnSet(), getPluginName(), getPluginVersion());
+			tabFolder.setSize(1300, 500);
+			dataList.createTab(createInputTab(tabFolder, Messages.getString("DATA_LIST"), true), getDnSet(),
+					getPluginName(), getPluginVersion());
 
-			alarmList.createTab(createInputTab(tabFolder, Messages.getString("ALERT_LIST"), true), getDnSet(), getPluginName(), getPluginVersion());
-			
+			alarmList.createTab(createInputTab(tabFolder, Messages.getString("ALERT_LIST"), true), getDnSet(),
+					getPluginName(), getPluginVersion());
+
 			tabFolder.setSelection(0);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
-	
+
 	private CTabFolder createTabFolder(final Composite composite) {
 		CTabFolder tabFolder = new CTabFolder(composite, SWT.BORDER);
 		tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -88,7 +91,7 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 				Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		return tabFolder;
 	}
-	
+
 	private Composite createInputTab(CTabFolder tabFolder, String label, boolean isScrolledComposite) {
 		CTabItem tab = new CTabItem(tabFolder, SWT.NONE);
 		tab.setText(label);
@@ -98,21 +101,26 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 		tab.setControl(composite);
 		return composite;
 	}
+
 	@Override
 	public void validateBeforeExecution() throws ValidationException {
 	}
+
 	@Override
 	public Map<String, Object> getParameterMap() {
 		return null;
 	}
+
 	@Override
 	public String getCommandId() {
 		return null;
 	}
+
 	@Override
 	public String getPluginName() {
 		return ResourceUsageConstants.PLUGIN_NAME;
 	}
+
 	@Override
 	public String getPluginVersion() {
 		return ResourceUsageConstants.PLUGIN_VERSION;
@@ -121,8 +129,6 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.CANCEL_ID, Messages.getString("CANCEL"), true);
 	}
-	
-
 
 	private EventHandler eventHandler = new EventHandler() {
 		@Override
@@ -142,15 +148,25 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog{
 
 							@Override
 							public void run() {
-								
-								if(responseData != null && !responseData.isEmpty()){
-									if(responseData.containsKey("memoryUsage") && responseData.containsKey("diskUsage") && responseData.containsKey("cpuPercentage")){
+
+								if (responseData != null && !responseData.isEmpty()) {
+									if (responseData.containsKey(
+											"status")) { /*
+															 * New request started
+															 */
+										alarmList.removeTableItems();
+									}
+									if (responseData.containsKey("memoryUsage") && responseData.containsKey("diskUsage")
+											&& responseData.containsKey("cpuPercentage")) {
 										ResourceUsageTableItem item = new ResourceUsageTableItem();
 										item.setCpuUsed(responseData.get("cpuPercentage").toString());
 										item.setMemUsed(responseData.get("memoryUsage").toString());
-										dataList.addTableItem(item);
-									}
-									if(responseData.containsKey("action") && responseData.get("action").equals("stop")){
+										List<Object> alerts = dataList.addTableItem(item);
+										if (alerts != null && !alerts.isEmpty()) {
+											for (Object object : alerts) {
+												alarmList.addTableItem(object);
+											}
+										}
 									}
 								}
 							}

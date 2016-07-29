@@ -1,10 +1,12 @@
 package tr.org.liderahenk.resourceusage.tabs;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,9 +26,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -40,6 +40,7 @@ import tr.org.liderahenk.liderconsole.core.utils.SWTResourceManager;
 import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
 import tr.org.liderahenk.resourceusage.constants.ResourceUsageConstants;
 import tr.org.liderahenk.resourceusage.i18n.Messages;
+import tr.org.liderahenk.resourceusage.model.ResourceUsageAlertTableItem;
 import tr.org.liderahenk.resourceusage.model.ResourceUsageTableItem;
 
 public class DataListTab implements IUsageTab {
@@ -108,21 +109,23 @@ public class DataListTab implements IUsageTab {
 	private Label lblWindowLength;
 	private Text txtWindowLength;
 	private TableViewer tableViewer;
+	private ArrayList<Integer> memAlerts = new ArrayList<>();
+	private ArrayList<Integer> cpuAlerts = new ArrayList<>();
 
-	private final String[] sendMailArray = new String[] { "SEND_MAIL", "SEND_CRITICAL_MAIL" };
+	private final String[] sendMailArray = new String[] { "SEND_MAIL", "SHUT_DOWN" };
 	KeyListener numericTextListener = new KeyListener() {
-		
+
 		@Override
 		public void keyReleased(KeyEvent e) {
 		}
-		
+
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if (!('0' <= e.character && e.character <= '9')) 
+			if (!(('0' <= e.character && e.character <= '9') || e.keyCode == 8))
 				e.doit = false;
-			
 		}
 	};
+
 	public void createInputs(Composite tabComposite) throws Exception {
 
 		Composite group = new Composite(tabComposite, SWT.NONE);
@@ -308,6 +311,9 @@ public class DataListTab implements IUsageTab {
 				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.START_TIMER);
 				executeTask(parameters);
 				cleanUpAverageTexts();
+				memAlerts.clear();
+				cpuAlerts.clear();
+
 			}
 
 			@Override
@@ -323,8 +329,6 @@ public class DataListTab implements IUsageTab {
 			public void widgetSelected(SelectionEvent e) {
 				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.STOP_TIMER);
 				executeTask(parameters);
-				setAverageLabels();
-				manageAlerts();
 			}
 
 			@Override
@@ -375,7 +379,7 @@ public class DataListTab implements IUsageTab {
 
 	}
 
-	private void cleanUpAverageTexts(){
+	private void cleanUpAverageTexts() {
 
 		txtMemoryUsagePattern.setText("");
 		txtMemoryUsagePattern.pack();
@@ -383,6 +387,7 @@ public class DataListTab implements IUsageTab {
 		txtCpuUsagePattern.setText("");
 		txtCpuUsagePattern.pack();
 	}
+
 	private void setAverageLabels() {
 		TableItem[] tableItems = tableViewer.getTable().getItems();
 		double averageMemUsage = 0;
@@ -401,25 +406,108 @@ public class DataListTab implements IUsageTab {
 		txtCpuUsagePattern.pack();
 	}
 
-	private void manageAlerts() {
-		TableItem[] tableItems = tableViewer.getTable().getItems();
-		double memAlertCount = 0;
-		double cpuAlertCount = 0;
-		for (TableItem tableItem : tableItems) {
-			if(Double.parseDouble(txtRules1.getText().toString()) <= Double.parseDouble(tableItem.getText(1))){
-				
+	private List<Object> manageAlerts() {
+
+		TableItem item = tableViewer.getTable().getItem(tableViewer.getTable().getItemCount() - 1);
+		List<Object> alerts = new ArrayList<>();
+		if (txtRules1 != null && !txtRules1.getText().isEmpty()) {
+			if (Double.parseDouble(
+					item.getText(1).toString()) > (Double.parseDouble(txtMemoryUsagePattern.getText().toString())
+							+ Double.parseDouble(txtMemoryUsagePattern.getText().toString()) / 100)) {
+				sendMail(Messages.getString("MEMORY_EXCEEEDS_MAIL_BODY"), txtMemoryUsagePattern.getText().toString(),
+						item.getText(1).toString());
+				memAlerts.add(tableViewer.getTable().getItemCount() - 1);
+				ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(1),
+						txtMemoryUsagePattern.getText().toString(), cmb1.getText().toString(), "Mem usage is critical");
+				alerts.add(alert);
 			}
 		}
-//		averageMemUsage = averageMemUsage / tableItems.length;
-//		averageCpuUsage = averageCpuUsage / tableItems.length;
-//
-//		txtMemoryUsagePattern.setText(String.valueOf(averageMemUsage));
-//		txtMemoryUsagePattern.pack();
-//
-//		txtCpuUsagePattern.setText(String.valueOf(averageCpuUsage));
-//		txtCpuUsagePattern.pack();
+
+		if (txtRules4 != null && !txtRules4.getText().isEmpty()) {
+			if (Double.parseDouble(item.getText(2)) > (Double.parseDouble(txtCpuUsagePattern.getText().toString())
+					+ Double.parseDouble(txtCpuUsagePattern.getText().toString()) / 100)) {
+				sendMail(Messages.getString("CPU_EXCEEDS_MAIL_BODY"), txtCpuUsagePattern.getText().toString(),
+						item.getText(2).toString());
+				cpuAlerts.add(tableViewer.getTable().getItemCount() - 1);
+				ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(2),
+						txtCpuUsagePattern.getText().toString(), cmb3.getText().toString(), "Cpu usage is critical");
+				alerts.add(alert);
+			}
+		}
+
+		if (txtRules2 != null && !txtRules2.getText().isEmpty() && txtRules3 != null
+				&& !txtRules3.getText().isEmpty()) {
+			if (memAlerts.size() > Integer.parseInt(txtRules2.getText().toString())) {
+				try {
+					DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+					Date now = (Date) formatter.parse(tableViewer.getTable()
+							.getItem(tableViewer.getTable().getItemCount() - 1).getText(0).toString());
+					for (int i = 0; i < memAlerts.size(); i++) {
+						Date before = (Date) formatter
+								.parse(tableViewer.getTable().getItem(memAlerts.get(i)).getText(0).toString());
+						long diffInMinutes = now.getTime() - before.getTime();
+						diffInMinutes = diffInMinutes / (60 * 1000) % 60;
+						if (diffInMinutes <= (Integer.parseInt(txtRules3.getText().toString()))) {
+							if (memAlerts.size() - i > Integer.parseInt(txtRules2.getText().toString())) {
+								sendMail(Messages.getString("MEMORY_COUNT_MAIL_BODY"), txtRules3.getText().toString(),
+										txtRules2.getText().toString());
+								break;
+							}
+						}
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+
+		if (txtRules5 != null && !txtRules5.getText().isEmpty() && txtRules6 != null
+				&& !txtRules6.getText().isEmpty()) {
+			if (cpuAlerts.size() > Integer.parseInt(txtRules5.getText().toString())) {
+				try {
+					DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+					Date now = (Date) formatter.parse(tableViewer.getTable()
+							.getItem(tableViewer.getTable().getItemCount() - 1).getText(0).toString());
+					for (int i = 0; i < cpuAlerts.size(); i++) {
+						Date before = (Date) formatter
+								.parse(tableViewer.getTable().getItem(cpuAlerts.get(i)).getText(0).toString());
+						long diffInMinutes = now.getTime() - before.getTime();
+						diffInMinutes = diffInMinutes / (60 * 1000) % 60;
+						if (diffInMinutes <= (Integer.parseInt(txtRules6.getText().toString()))) {
+							if (cpuAlerts.size() - i > Integer.parseInt(txtRules5.getText().toString())) {
+								sendMail(Messages.getString("CPU_COUNT_MAIL_BODY"), txtRules6.getText().toString(),
+										txtRules5.getText().toString());
+								break;
+							}
+						}
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+		return alerts;
 	}
-	
+
+	private void sendMail(String body, String average, String calculated) {
+		try {
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put(ResourceUsageConstants.MAIL_PARAMETERS.TO, txtMailAddress.getText().toString());
+			body = body.replaceFirst("CHANGE", getDnSet().toArray()[0].toString());
+			body = body.replaceFirst("CHANGE", txtRules1.getText().toString());
+			body = body.replaceFirst("CHANGE", average);
+			body = body.replaceFirst("CHANGE", calculated);
+			parameters.put(ResourceUsageConstants.MAIL_PARAMETERS.BODY, body);
+			TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK, getPluginName(),
+					getPluginVersion(), "SEND_MAIL", parameters, null, new Date());
+			TaskRestUtils.execute(task);
+		} catch (Exception e1) {
+			Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
+		}
+	}
+
 	private void createTable(final Composite parent) {
 		tableViewer = new TableViewer(parent,
 				SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
@@ -551,7 +639,7 @@ public class DataListTab implements IUsageTab {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void addTableItem(Object tableItem) {
+	public List<Object> addTableItem(Object tableItem) {
 		ResourceUsageTableItem item = (ResourceUsageTableItem) tableItem;
 		String mem = item.getMemUsed();
 		String[] splittedMemUsage = mem.split(",");
@@ -567,6 +655,9 @@ public class DataListTab implements IUsageTab {
 		listItems.add(item);
 		tableViewer.setInput(listItems);
 		tableViewer.refresh();
+
+		setAverageLabels();
+		return manageAlerts();
 	}
 
 	public ArrayList<ResourceUsageTableItem> getItems() {

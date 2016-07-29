@@ -33,8 +33,9 @@ class ResourceUsage(AbstractPlugin):
                 self._threadCep = Thread(target=self.run_timer,
                                          args=(int(self.data['interval']), self.context.get('task_id')))
                 self._threadCep.start()
+                data = {"status": "started"}
                 self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
-                                             message='Kaynak kullanım bilgileri toplanmaya başlandı.')
+                                             message='Kaynak kullanım bilgileri toplanmaya başlandı.', data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
             elif action == "stop_timer":
                 self.is_running = False
                 with open('is_running.txt', 'w') as f:

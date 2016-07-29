@@ -1,5 +1,7 @@
 package tr.org.liderahenk.resourceusage.tabs;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -27,6 +29,7 @@ public class AlertListTab implements IUsageTab {
 	private String pluginVersion;
 	private String pluginName;
 	private Set<String> dnSet;
+
 	public String getPluginVersion() {
 		return pluginVersion;
 	}
@@ -50,16 +53,17 @@ public class AlertListTab implements IUsageTab {
 	public void setDnSet(Set<String> dnSet) {
 		this.dnSet = dnSet;
 	}
+
 	public void createInputs(Composite tabComposite) throws Exception {
-		
-		Composite  alertListcomposite = new Composite(tabComposite, SWT.BORDER);
+
+		Composite alertListcomposite = new Composite(tabComposite, SWT.BORDER);
 		alertListcomposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		alertListcomposite.setLayout(new GridLayout(1, false));
 
 		lblAlertList = new Label(alertListcomposite, SWT.NONE);
 		lblAlertList.setFont(SWTResourceManager.getFont("Sans", 9, SWT.BOLD));
 		lblAlertList.setText(Messages.getString("ALERT_LIST"));
-		
+
 		createTable(alertListcomposite);
 
 		((ScrolledComposite) tabComposite).setContent(alertListcomposite);
@@ -67,7 +71,7 @@ public class AlertListTab implements IUsageTab {
 		((ScrolledComposite) tabComposite).setExpandVertical(true);
 		((ScrolledComposite) tabComposite).setExpandHorizontal(true);
 		((ScrolledComposite) tabComposite).setMinSize(alertListcomposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		
+
 	}
 
 	private void createTable(final Composite parent) {
@@ -97,8 +101,9 @@ public class AlertListTab implements IUsageTab {
 
 	private void createTableColumns() {
 
-		String[] titles = { Messages.getString("DATE"), Messages.getString("USAGE"), Messages.getString("PATTERN"), Messages.getString("ACTION"), Messages.getString("MESSAGE") };
-		int[] bounds = { 240, 240, 240, 240, 300};
+		String[] titles = { Messages.getString("DATE"), Messages.getString("USAGE"), Messages.getString("PATTERN"),
+				Messages.getString("ACTION"), Messages.getString("MESSAGE") };
+		int[] bounds = { 240, 240, 240, 240, 300 };
 
 		TableViewerColumn dateColumn = createTableViewerColumn(titles[0], bounds[0]);
 		dateColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -156,7 +161,6 @@ public class AlertListTab implements IUsageTab {
 		});
 	}
 
-
 	private TableViewerColumn createTableViewerColumn(String title, int bound) {
 		final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
 		final TableColumn column = viewerColumn.getColumn();
@@ -167,12 +171,10 @@ public class AlertListTab implements IUsageTab {
 		column.setAlignment(SWT.LEFT);
 		return viewerColumn;
 	}
-	
-	
 
 	@Override
 	public void validateBeforeSave() throws ValidationException {
-		
+
 	}
 
 	@Override
@@ -184,14 +186,24 @@ public class AlertListTab implements IUsageTab {
 		createInputs(tabComposite);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void addTableItem(Object tableItem) {
-		
+	public List<Object> addTableItem(Object tableItem) {
+		ArrayList<ResourceUsageAlertTableItem> listItems = (ArrayList<ResourceUsageAlertTableItem>) tableViewer
+				.getInput();
+		if (listItems == null) {
+			listItems = new ArrayList<>();
+		}
+		listItems.add((ResourceUsageAlertTableItem) tableItem);
+		tableViewer.setInput(listItems);
+		tableViewer.refresh();
+
+		return null;
 	}
 
 	@Override
 	public void removeTableItems() {
-		tableViewer.getTable().clearAll();
+		tableViewer.setInput(null);
 		tableViewer.refresh();
 	}
 
