@@ -72,10 +72,10 @@ class ResourceUsage(AbstractPlugin):
         data['memoryUsage'] = str(memory_usage)
         data['diskUsage'] = str(disk_usage)
         data['cpuPercentage'] = str(cpu_percentage)
-        command = 'python3 ahenkd.py send -t {0} -m {1} -s'.format(task_id, json.dumps(str(data)))
+        command = 'python3 /opt/ahenk/ahenkd.py send -t {0} -m {1} -s'.format(task_id, json.dumps(str(data)))
         result_code, p_out, p_err = self.execute(command)
         if result_code != 0:
-            self.logger.error("[PACKAGE MANAGER] Error occurred while sending message: " + str(p_err))
+            self.logger.error("[RESOURCE USAGE] Error occurred while sending message: " + str(p_err))
 
 
 def handle_task(task, context):

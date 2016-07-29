@@ -1,6 +1,8 @@
 package tr.org.liderahenk.resourceusage.tabs;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.directory.api.ldap.model.message.Message;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -308,11 +311,11 @@ public class DataListTab implements IUsageTab {
 			public void widgetSelected(SelectionEvent e) {
 				validateBeforeSave();
 				removeTableItems();
-				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.START_TIMER);
-				executeTask(parameters);
 				cleanUpAverageTexts();
 				memAlerts.clear();
 				cpuAlerts.clear();
+				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.START_TIMER);
+				executeTask(parameters);
 
 			}
 
@@ -399,10 +402,14 @@ public class DataListTab implements IUsageTab {
 		averageMemUsage = averageMemUsage / tableItems.length;
 		averageCpuUsage = averageCpuUsage / tableItems.length;
 
-		txtMemoryUsagePattern.setText(String.valueOf(averageMemUsage));
+		NumberFormat formatter = new DecimalFormat("#0.00");
+		String averageMemUsageString = formatter.format(averageMemUsage);
+		String averageCpuUsageString = formatter.format(averageCpuUsage);
+
+		txtMemoryUsagePattern.setText(averageMemUsageString.replace(',', '.'));
 		txtMemoryUsagePattern.pack();
 
-		txtCpuUsagePattern.setText(String.valueOf(averageCpuUsage));
+		txtCpuUsagePattern.setText(averageCpuUsageString.replace(',', '.'));
 		txtCpuUsagePattern.pack();
 	}
 
@@ -414,24 +421,30 @@ public class DataListTab implements IUsageTab {
 			if (Double.parseDouble(
 					item.getText(1).toString()) > (Double.parseDouble(txtMemoryUsagePattern.getText().toString())
 							+ Double.parseDouble(txtMemoryUsagePattern.getText().toString()) / 100)) {
-				sendMail(Messages.getString("MEMORY_EXCEEEDS_MAIL_BODY"), txtMemoryUsagePattern.getText().toString(),
-						item.getText(1).toString());
 				memAlerts.add(tableViewer.getTable().getItemCount() - 1);
 				ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(1),
 						txtMemoryUsagePattern.getText().toString(), cmb1.getText().toString(), "Mem usage is critical");
 				alerts.add(alert);
+				if (cmb1.getText().toString().equals(Messages.getString("SEND_MAIL")))
+					sendMail(Messages.getString("MEMORY_EXCEEEDS_MAIL_BODY"),
+							txtMemoryUsagePattern.getText().toString(), item.getText(1).toString());
+				else
+					executeShutdownTask();
 			}
 		}
 
 		if (txtRules4 != null && !txtRules4.getText().isEmpty()) {
 			if (Double.parseDouble(item.getText(2)) > (Double.parseDouble(txtCpuUsagePattern.getText().toString())
 					+ Double.parseDouble(txtCpuUsagePattern.getText().toString()) / 100)) {
-				sendMail(Messages.getString("CPU_EXCEEDS_MAIL_BODY"), txtCpuUsagePattern.getText().toString(),
-						item.getText(2).toString());
 				cpuAlerts.add(tableViewer.getTable().getItemCount() - 1);
 				ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(2),
 						txtCpuUsagePattern.getText().toString(), cmb3.getText().toString(), "Cpu usage is critical");
 				alerts.add(alert);
+				if (cmb3.getText().toString().equals(Messages.getString("SEND_MAIL")))
+					sendMail(Messages.getString("CPU_EXCEEDS_MAIL_BODY"), txtCpuUsagePattern.getText().toString(),
+							item.getText(2).toString());
+				else
+					executeShutdownTask();
 			}
 		}
 
@@ -449,8 +462,11 @@ public class DataListTab implements IUsageTab {
 						diffInMinutes = diffInMinutes / (60 * 1000) % 60;
 						if (diffInMinutes <= (Integer.parseInt(txtRules3.getText().toString()))) {
 							if (memAlerts.size() - i > Integer.parseInt(txtRules2.getText().toString())) {
-								sendMail(Messages.getString("MEMORY_COUNT_MAIL_BODY"), txtRules3.getText().toString(),
-										txtRules2.getText().toString());
+								if (cmb2.getText().toString().equals(Messages.getString("SEND_MAIL")))
+									sendMail(Messages.getString("MEMORY_COUNT_MAIL_BODY"),
+											txtRules3.getText().toString(), txtRules2.getText().toString());
+								else
+									executeShutdownTask();
 								break;
 							}
 						}
@@ -476,8 +492,11 @@ public class DataListTab implements IUsageTab {
 						diffInMinutes = diffInMinutes / (60 * 1000) % 60;
 						if (diffInMinutes <= (Integer.parseInt(txtRules6.getText().toString()))) {
 							if (cpuAlerts.size() - i > Integer.parseInt(txtRules5.getText().toString())) {
-								sendMail(Messages.getString("CPU_COUNT_MAIL_BODY"), txtRules6.getText().toString(),
-										txtRules5.getText().toString());
+								if (cmb4.getText().toString().equals(Messages.getString("SEND_MAIL")))
+									sendMail(Messages.getString("CPU_COUNT_MAIL_BODY"), txtRules6.getText().toString(),
+											txtRules5.getText().toString());
+								else
+									executeShutdownTask();
 								break;
 							}
 						}
@@ -489,6 +508,16 @@ public class DataListTab implements IUsageTab {
 			}
 		}
 		return alerts;
+	}
+
+	private void executeShutdownTask() {
+		try {
+			TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK, getPluginName(),
+					getPluginVersion(), "SHUTDOWN", null, null, new Date());
+			TaskRestUtils.execute(task);
+		} catch (Exception e1) {
+			Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
+		}
 	}
 
 	private void sendMail(String body, String average, String calculated) {
