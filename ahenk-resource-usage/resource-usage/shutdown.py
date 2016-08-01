@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Author:Mine DOGAN <mine.dogan@agem.com.tr>
-
+from base.model.enum.ContentType import ContentType
 from base.plugin.abstract_plugin import AbstractPlugin
 from base.system.system import System
-
+import json
 
 class ShutDownMachine(AbstractPlugin):
     def __init__(self, task, context):
@@ -25,9 +25,9 @@ class ShutDownMachine(AbstractPlugin):
 
             response = 'Shutdown komutu başarıyla çalıştırıldı. Bilgisayar kapatılacak. Mac Adres(ler)i: {0}, Ip Adres(ler)i: {1}' \
                 .format(System.Hardware.Network.mac_addresses(), System.Hardware.Network.ip_addresses())
-
+            data = {"shutdown": "true"}
             self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
-                                         message=response)
+                                         data = json.dumps(data), message=response, content_type= ContentType.APPLICATION_JSON.value)
             self.logger.info('[SEOURCE USAGE - Shut Down Machine] task is handled successfully')
 
         except Exception as e:

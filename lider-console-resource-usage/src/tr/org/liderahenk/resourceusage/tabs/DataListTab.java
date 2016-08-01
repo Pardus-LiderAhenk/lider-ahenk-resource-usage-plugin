@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.directory.api.ldap.model.message.Message;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -21,6 +20,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormData;
@@ -114,6 +115,8 @@ public class DataListTab implements IUsageTab {
 	private TableViewer tableViewer;
 	private ArrayList<Integer> memAlerts = new ArrayList<>();
 	private ArrayList<Integer> cpuAlerts = new ArrayList<>();
+	private ArrayList<ResourceUsageTableItem> totalItems = new ArrayList<>();
+	ArrayList<ResourceUsageTableItem> filteredItems = new ArrayList<>();
 
 	private final String[] sendMailArray = new String[] { "SEND_MAIL", "SHUT_DOWN" };
 	KeyListener numericTextListener = new KeyListener() {
@@ -159,6 +162,7 @@ public class DataListTab implements IUsageTab {
 		txtDataCollectionInterval = new Text(dataCollectionIntervalComposite, SWT.BORDER);
 		txtDataCollectionInterval.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 		txtDataCollectionInterval.addKeyListener(numericTextListener);
+		txtDataCollectionInterval.setTextLimit(3);
 
 		Composite rulesComposite = new Composite(memoryCpuUsageMonitoring, SWT.BORDER);
 		rulesComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -177,6 +181,7 @@ public class DataListTab implements IUsageTab {
 		txtRules1 = new Text(rules1Composite, SWT.BORDER);
 		txtRules1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		txtRules1.addKeyListener(numericTextListener);
+		txtRules1.setTextLimit(2);
 
 		lblRules2 = new Label(rules1Composite, SWT.LEFT);
 		lblRules2.setText(Messages.getString("RULES2"));
@@ -204,6 +209,7 @@ public class DataListTab implements IUsageTab {
 		txtRules2 = new Text(rules2Composite, SWT.BORDER);
 		txtRules2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		txtRules2.addKeyListener(numericTextListener);
+		txtRules2.setTextLimit(2);
 
 		lblRules4 = new Label(rules2Composite, SWT.NONE);
 		lblRules4.setText(Messages.getString("RULES4"));
@@ -211,6 +217,7 @@ public class DataListTab implements IUsageTab {
 		txtRules3 = new Text(rules2Composite, SWT.BORDER);
 		txtRules3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		txtRules3.addKeyListener(numericTextListener);
+		txtRules3.setTextLimit(2);
 
 		lblRules5 = new Label(rules2Composite, SWT.LEFT);
 		lblRules5.setText(Messages.getString("RULES5"));
@@ -236,6 +243,7 @@ public class DataListTab implements IUsageTab {
 		txtRules4 = new Text(rules3Composite, SWT.BORDER);
 		txtRules4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		txtRules4.addKeyListener(numericTextListener);
+		txtRules4.setTextLimit(2);
 
 		lblRules7 = new Label(rules3Composite, SWT.LEFT);
 		lblRules7.setText(Messages.getString("RULES7"));
@@ -261,6 +269,7 @@ public class DataListTab implements IUsageTab {
 		txtRules5 = new Text(rules4Composite, SWT.BORDER);
 		txtRules5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		txtRules5.addKeyListener(numericTextListener);
+		txtRules5.setTextLimit(2);
 
 		lblRules9 = new Label(rules4Composite, SWT.NONE);
 		lblRules9.setText(Messages.getString("RULES9"));
@@ -268,6 +277,7 @@ public class DataListTab implements IUsageTab {
 		txtRules6 = new Text(rules4Composite, SWT.BORDER);
 		txtRules6.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		txtRules6.addKeyListener(numericTextListener);
+		txtRules6.setTextLimit(2);
 
 		lblRules10 = new Label(rules4Composite, SWT.LEFT);
 		lblRules10.setText(Messages.getString("RULES10"));
@@ -314,6 +324,8 @@ public class DataListTab implements IUsageTab {
 				cleanUpAverageTexts();
 				memAlerts.clear();
 				cpuAlerts.clear();
+				totalItems.clear();
+				filteredItems.clear();
 				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.START_TIMER);
 				executeTask(parameters);
 
@@ -371,6 +383,22 @@ public class DataListTab implements IUsageTab {
 
 		txtWindowLength = new Text(informationObjectsComposite, SWT.BORDER);
 		txtWindowLength.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		txtWindowLength.setTextLimit(2);
+		txtWindowLength.addKeyListener(numericTextListener);
+		txtWindowLength.addModifyListener(new ModifyListener(){
+		      public void modifyText(ModifyEvent event) {
+		          Text text = (Text) event.widget;
+		          if(text.getText() != null && !text.getText().isEmpty()){
+		        	  filteredItems.clear();
+		        	  filterInfo(Integer.parseInt(text.getText().toString()));
+		          }
+		          else {
+		        	  filteredItems = new ArrayList<ResourceUsageTableItem>(totalItems);
+		        	  tableViewer.setInput(filteredItems);
+		        	  tableViewer.refresh();
+		          }
+		        }
+		      });
 
 		createTable(informationObjectsComposite);
 
@@ -382,6 +410,31 @@ public class DataListTab implements IUsageTab {
 
 	}
 
+	private void filterInfo(int dayCount) {
+		try {
+			DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			int i = 0;
+			for (ResourceUsageTableItem resourceUsageTableItem : totalItems) {
+				Date recordDate = (Date) formatter.parse(resourceUsageTableItem.getRecordDate());
+				int days = (int)( (date.getTime() - recordDate.getTime()) / (1000 * 60 * 60 * 24));
+				if(i%2 == 1){
+					dayCount = -1;
+				}else
+					dayCount = 1;
+				if(days <= dayCount){
+					filteredItems.add(resourceUsageTableItem);
+				}
+				i++;
+			}
+			tableViewer.setInput(filteredItems);
+			tableViewer.refresh();
+			setAverageLabels();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void cleanUpAverageTexts() {
 
 		txtMemoryUsagePattern.setText("");
@@ -417,6 +470,7 @@ public class DataListTab implements IUsageTab {
 
 		TableItem item = tableViewer.getTable().getItem(tableViewer.getTable().getItemCount() - 1);
 		List<Object> alerts = new ArrayList<>();
+		boolean isShutDown = false;
 		if (txtRules1 != null && !txtRules1.getText().isEmpty()) {
 			if (Double.parseDouble(
 					item.getText(1).toString()) > (Double.parseDouble(txtMemoryUsagePattern.getText().toString())
@@ -429,11 +483,11 @@ public class DataListTab implements IUsageTab {
 					sendMail(Messages.getString("MEMORY_EXCEEEDS_MAIL_BODY"),
 							txtMemoryUsagePattern.getText().toString(), item.getText(1).toString());
 				else
-					executeShutdownTask();
+					isShutDown = executeShutdownTask();
 			}
 		}
 
-		if (txtRules4 != null && !txtRules4.getText().isEmpty()) {
+		if (!isShutDown && txtRules4 != null && !txtRules4.getText().isEmpty()) {
 			if (Double.parseDouble(item.getText(2)) > (Double.parseDouble(txtCpuUsagePattern.getText().toString())
 					+ Double.parseDouble(txtCpuUsagePattern.getText().toString()) / 100)) {
 				cpuAlerts.add(tableViewer.getTable().getItemCount() - 1);
@@ -444,11 +498,11 @@ public class DataListTab implements IUsageTab {
 					sendMail(Messages.getString("CPU_EXCEEDS_MAIL_BODY"), txtCpuUsagePattern.getText().toString(),
 							item.getText(2).toString());
 				else
-					executeShutdownTask();
+					isShutDown = executeShutdownTask();
 			}
 		}
 
-		if (txtRules2 != null && !txtRules2.getText().isEmpty() && txtRules3 != null
+		if (!isShutDown && txtRules2 != null && !txtRules2.getText().isEmpty() && txtRules3 != null
 				&& !txtRules3.getText().isEmpty()) {
 			if (memAlerts.size() > Integer.parseInt(txtRules2.getText().toString())) {
 				try {
@@ -466,7 +520,10 @@ public class DataListTab implements IUsageTab {
 									sendMail(Messages.getString("MEMORY_COUNT_MAIL_BODY"),
 											txtRules3.getText().toString(), txtRules2.getText().toString());
 								else
-									executeShutdownTask();
+									isShutDown = executeShutdownTask();
+									ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(1),
+										txtMemoryUsagePattern.getText().toString(), cmb2.getText().toString(), "Machine is shut down because of critical memory usage");
+									alerts.add(alert);
 								break;
 							}
 						}
@@ -478,7 +535,7 @@ public class DataListTab implements IUsageTab {
 			}
 		}
 
-		if (txtRules5 != null && !txtRules5.getText().isEmpty() && txtRules6 != null
+		if (!isShutDown && txtRules5 != null && !txtRules5.getText().isEmpty() && txtRules6 != null
 				&& !txtRules6.getText().isEmpty()) {
 			if (cpuAlerts.size() > Integer.parseInt(txtRules5.getText().toString())) {
 				try {
@@ -496,7 +553,10 @@ public class DataListTab implements IUsageTab {
 									sendMail(Messages.getString("CPU_COUNT_MAIL_BODY"), txtRules6.getText().toString(),
 											txtRules5.getText().toString());
 								else
-									executeShutdownTask();
+									isShutDown = executeShutdownTask();
+									ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(2),
+									txtCpuUsagePattern.getText().toString(), cmb4.getText().toString(), "Machine is shut down because of critical cpu usage");
+									alerts.add(alert);
 								break;
 							}
 						}
@@ -510,14 +570,19 @@ public class DataListTab implements IUsageTab {
 		return alerts;
 	}
 
-	private void executeShutdownTask() {
+	private boolean executeShutdownTask() {
+		boolean isShutDown = false;
 		try {
 			TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK, getPluginName(),
 					getPluginVersion(), "SHUTDOWN", null, null, new Date());
 			TaskRestUtils.execute(task);
+			memAlerts.clear();
+			cpuAlerts.clear();
+			isShutDown = true;
 		} catch (Exception e1) {
 			Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
 		}
+		return isShutDown;
 	}
 
 	private void sendMail(String body, String average, String calculated) {
@@ -666,7 +731,6 @@ public class DataListTab implements IUsageTab {
 		createInputs(tabComposite);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object> addTableItem(Object tableItem) {
 		ResourceUsageTableItem item = (ResourceUsageTableItem) tableItem;
@@ -677,12 +741,9 @@ public class DataListTab implements IUsageTab {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
 		item.setRecordDate(dateFormat.format(date));
-		ArrayList<ResourceUsageTableItem> listItems = (ArrayList<ResourceUsageTableItem>) tableViewer.getInput();
-		if (listItems == null) {
-			listItems = new ArrayList<>();
-		}
-		listItems.add(item);
-		tableViewer.setInput(listItems);
+		totalItems.add(item);
+		filteredItems.add(item);
+		tableViewer.setInput(filteredItems);
 		tableViewer.refresh();
 
 		setAverageLabels();

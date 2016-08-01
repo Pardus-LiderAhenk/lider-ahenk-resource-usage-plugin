@@ -150,21 +150,23 @@ public class ResourceUsageAlertTaskDialog extends DefaultTaskDialog {
 							public void run() {
 
 								if (responseData != null && !responseData.isEmpty()) {
-									if (responseData.containsKey(
-											"status")) { /*
-															 * New request started
-															 */
-										alarmList.removeTableItems();
-									}
-									if (responseData.containsKey("memoryUsage") && responseData.containsKey("diskUsage")
-											&& responseData.containsKey("cpuPercentage")) {
-										ResourceUsageTableItem item = new ResourceUsageTableItem();
-										item.setCpuUsed(responseData.get("cpuPercentage").toString());
-										item.setMemUsed(responseData.get("memoryUsage").toString());
-										List<Object> alerts = dataList.addTableItem(item);
-										if (alerts != null && !alerts.isEmpty()) {
-											for (Object object : alerts) {
-												alarmList.addTableItem(object);
+									if(!responseData.containsKey("shutdown")){
+										if (responseData.containsKey(
+												"status")) { /*
+																 * New request started
+																 */
+											alarmList.removeTableItems();
+										}
+										if (responseData.containsKey("memoryUsage") && responseData.containsKey("diskUsage")
+												&& responseData.containsKey("cpuPercentage")) {
+											ResourceUsageTableItem item = new ResourceUsageTableItem();
+											item.setCpuUsed(responseData.get("cpuPercentage").toString());
+											item.setMemUsed(responseData.get("memoryUsage").toString());
+											List<Object> alerts = dataList.addTableItem(item);
+											if (alerts != null && !alerts.isEmpty()) {
+												for (Object object : alerts) {
+													alarmList.addTableItem(object);
+												}
 											}
 										}
 									}
