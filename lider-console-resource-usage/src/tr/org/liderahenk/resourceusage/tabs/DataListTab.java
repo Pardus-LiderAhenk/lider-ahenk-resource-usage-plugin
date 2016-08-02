@@ -477,7 +477,7 @@ public class DataListTab implements IUsageTab {
 							+ Double.parseDouble(txtMemoryUsagePattern.getText().toString()) / 100)) {
 				memAlerts.add(tableViewer.getTable().getItemCount() - 1);
 				ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(1),
-						txtMemoryUsagePattern.getText().toString(), cmb1.getText().toString(), "Mem usage is critical");
+						txtMemoryUsagePattern.getText().toString(), cmb1.getText().toString(), Messages.getString("MEMORY_CRITICAL_WARNING"));
 				alerts.add(alert);
 				if (cmb1.getText().toString().equals(Messages.getString("SEND_MAIL")))
 					sendMail(Messages.getString("MEMORY_EXCEEEDS_MAIL_BODY"),
@@ -492,7 +492,7 @@ public class DataListTab implements IUsageTab {
 					+ Double.parseDouble(txtCpuUsagePattern.getText().toString()) / 100)) {
 				cpuAlerts.add(tableViewer.getTable().getItemCount() - 1);
 				ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(2),
-						txtCpuUsagePattern.getText().toString(), cmb3.getText().toString(), "Cpu usage is critical");
+						txtCpuUsagePattern.getText().toString(), cmb3.getText().toString(), Messages.getString("CPU_CRITICAL_WARNING"));
 				alerts.add(alert);
 				if (cmb3.getText().toString().equals(Messages.getString("SEND_MAIL")))
 					sendMail(Messages.getString("CPU_EXCEEDS_MAIL_BODY"), txtCpuUsagePattern.getText().toString(),
@@ -522,7 +522,7 @@ public class DataListTab implements IUsageTab {
 								else
 									isShutDown = executeShutdownTask();
 									ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(1),
-										txtMemoryUsagePattern.getText().toString(), cmb2.getText().toString(), "Machine is shut down because of critical memory usage");
+										txtMemoryUsagePattern.getText().toString(), cmb2.getText().toString(), Messages.getString("SHUTDOWN_MEMORY_INFO"));
 									alerts.add(alert);
 								break;
 							}
@@ -555,7 +555,7 @@ public class DataListTab implements IUsageTab {
 								else
 									isShutDown = executeShutdownTask();
 									ResourceUsageAlertTableItem alert = new ResourceUsageAlertTableItem(item.getText(0), item.getText(2),
-									txtCpuUsagePattern.getText().toString(), cmb4.getText().toString(), "Machine is shut down because of critical cpu usage");
+									txtCpuUsagePattern.getText().toString(), cmb4.getText().toString(), Messages.getString("SHUTDOWN_CPU_INFO"));
 									alerts.add(alert);
 								break;
 							}
