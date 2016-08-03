@@ -320,6 +320,7 @@ public class DataListTab implements IUsageTab {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				validateBeforeSave();
+				disableInputs();
 				removeTableItems();
 				cleanUpAverageTexts();
 				memAlerts.clear();
@@ -344,6 +345,7 @@ public class DataListTab implements IUsageTab {
 			public void widgetSelected(SelectionEvent e) {
 				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.STOP_TIMER);
 				executeTask(parameters);
+				enableInputs();
 			}
 
 			@Override
@@ -410,6 +412,61 @@ public class DataListTab implements IUsageTab {
 
 	}
 
+	private void disableInputs() {
+		txtDataCollectionInterval.setEnabled(false);
+		txtDataCollectionInterval.pack();
+		txtRules1.setEnabled(false);
+		txtRules1.pack();
+		txtRules2.setEnabled(false);
+		txtRules2.pack();
+		txtRules3.setEnabled(false);
+		txtRules3.pack();
+		txtRules4.setEnabled(false);
+		txtRules4.pack();
+		txtRules5.setEnabled(false);
+		txtRules5.pack();
+		txtRules6.setEnabled(false);
+		txtRules6.pack();
+		txtMailAddress.setEnabled(false);
+		txtMailAddress.pack();
+		cmb1.setEnabled(false);
+		cmb1.pack();
+		cmb2.setEnabled(false);
+		cmb2.pack();
+		cmb3.setEnabled(false);
+		cmb3.pack();
+		cmb4.setEnabled(false);
+		cmb4.pack();
+	}
+
+	private void enableInputs() {
+		txtDataCollectionInterval.setEnabled(true);
+		txtDataCollectionInterval.pack();
+		txtRules1.setEnabled(true);
+		txtRules1.pack();
+		txtRules2.setEnabled(true);
+		txtRules2.pack();
+		txtRules3.setEnabled(true);
+		txtRules3.pack();
+		txtRules4.setEnabled(true);
+		txtRules4.pack();
+		txtRules5.setEnabled(true);
+		txtRules5.pack();
+		txtRules6.setEnabled(true);
+		txtRules6.pack();
+		txtMailAddress.setEnabled(true);
+		txtMailAddress.pack();
+		cmb1.setEnabled(true);
+		cmb1.pack();
+		cmb2.setEnabled(true);
+		cmb2.pack();
+		cmb3.setEnabled(true);
+		cmb3.pack();
+		cmb4.setEnabled(true);
+		cmb4.pack();
+		
+	}
+	
 	private void filterInfo(int dayCount) {
 		try {
 			DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -680,22 +737,38 @@ public class DataListTab implements IUsageTab {
 
 	@Override
 	public void validateBeforeSave() throws ValidationException {
-		if (txtDataCollectionInterval == null || txtDataCollectionInterval.getText().isEmpty())
-			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if (txtRules1 == null || txtRules1.getText().isEmpty())
-			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if (txtRules2 == null || txtRules2.getText().isEmpty())
-			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if (txtRules3 == null || txtRules3.getText().isEmpty())
-			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if (txtRules4 == null || txtRules4.getText().isEmpty())
-			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if (txtRules5 == null || txtRules5.getText().isEmpty())
-			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if (txtRules6 == null || txtRules6.getText().isEmpty())
-			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
-		if (txtMailAddress == null || txtMailAddress.getText().isEmpty())
-			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS"));
+		if (txtDataCollectionInterval == null || txtDataCollectionInterval.getText().isEmpty()){
+			Notifier.error("", Messages.getString("FILL_ALL_FIELDS"));
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS")); 
+		}
+		if (txtRules1 == null || txtRules1.getText().isEmpty()){
+			Notifier.error("", Messages.getString("FILL_ALL_FIELDS"));
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS")); 
+		}
+		if (txtRules2 == null || txtRules2.getText().isEmpty()){
+			Notifier.error("", Messages.getString("FILL_ALL_FIELDS"));
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS")); 
+		}
+		if (txtRules3 == null || txtRules3.getText().isEmpty()){
+			Notifier.error("", Messages.getString("FILL_ALL_FIELDS"));
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS")); 
+		}
+		if (txtRules4 == null || txtRules4.getText().isEmpty()){
+			Notifier.error("", Messages.getString("FILL_ALL_FIELDS"));
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS")); 
+		}
+		if (txtRules5 == null || txtRules5.getText().isEmpty()){
+			Notifier.error("", Messages.getString("FILL_ALL_FIELDS"));
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS")); 
+		}
+		if (txtRules6 == null || txtRules6.getText().isEmpty()){
+			Notifier.error("", Messages.getString("FILL_ALL_FIELDS"));
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS")); 
+		}
+		if (txtMailAddress == null || txtMailAddress.getText().isEmpty()){
+			Notifier.error("", Messages.getString("FILL_ALL_FIELDS"));
+			throw new ValidationException(Messages.getString("FILL_ALL_FIELDS")); 
+		}
 	}
 
 	private void executeTask(Map<String, Object> parameters) {
