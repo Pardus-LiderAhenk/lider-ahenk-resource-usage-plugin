@@ -160,10 +160,15 @@ public class DataListTab implements IUsageTab {
 		lblDataCollectionInterval.setText(Messages.getString("DATA_COLLECTION_INTERVAL"));
 
 		txtDataCollectionInterval = new Text(dataCollectionIntervalComposite, SWT.BORDER);
-		txtDataCollectionInterval.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+		GridData gd = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+		gd.widthHint = 20;
+		txtDataCollectionInterval.setLayoutData(gd);
 		txtDataCollectionInterval.addKeyListener(numericTextListener);
 		txtDataCollectionInterval.setTextLimit(3);
 
+		GridData gdRules = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+		gdRules.widthHint = 20;
+		
 		Composite rulesComposite = new Composite(memoryCpuUsageMonitoring, SWT.BORDER);
 		rulesComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		rulesComposite.setLayout(new GridLayout(1, false));
@@ -179,7 +184,7 @@ public class DataListTab implements IUsageTab {
 		lblRules1.setText(Messages.getString("RULES1"));
 
 		txtRules1 = new Text(rules1Composite, SWT.BORDER);
-		txtRules1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		txtRules1.setLayoutData(gdRules);
 		txtRules1.addKeyListener(numericTextListener);
 		txtRules1.setTextLimit(2);
 
@@ -207,7 +212,7 @@ public class DataListTab implements IUsageTab {
 		lblRules3.setText(Messages.getString("RULES3"));
 
 		txtRules2 = new Text(rules2Composite, SWT.BORDER);
-		txtRules2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		txtRules2.setLayoutData(gdRules);
 		txtRules2.addKeyListener(numericTextListener);
 		txtRules2.setTextLimit(2);
 
@@ -215,7 +220,7 @@ public class DataListTab implements IUsageTab {
 		lblRules4.setText(Messages.getString("RULES4"));
 
 		txtRules3 = new Text(rules2Composite, SWT.BORDER);
-		txtRules3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		txtRules3.setLayoutData(gdRules);
 		txtRules3.addKeyListener(numericTextListener);
 		txtRules3.setTextLimit(2);
 
@@ -241,7 +246,7 @@ public class DataListTab implements IUsageTab {
 		lblRules6.setText(Messages.getString("RULES6"));
 
 		txtRules4 = new Text(rules3Composite, SWT.BORDER);
-		txtRules4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		txtRules4.setLayoutData(gdRules);
 		txtRules4.addKeyListener(numericTextListener);
 		txtRules4.setTextLimit(2);
 
@@ -267,7 +272,7 @@ public class DataListTab implements IUsageTab {
 		lblRules8.setText(Messages.getString("RULES8"));
 
 		txtRules5 = new Text(rules4Composite, SWT.BORDER);
-		txtRules5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		txtRules5.setLayoutData(gdRules);
 		txtRules5.addKeyListener(numericTextListener);
 		txtRules5.setTextLimit(2);
 
@@ -275,7 +280,7 @@ public class DataListTab implements IUsageTab {
 		lblRules9.setText(Messages.getString("RULES9"));
 
 		txtRules6 = new Text(rules4Composite, SWT.BORDER);
-		txtRules6.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		txtRules6.setLayoutData(gdRules);
 		txtRules6.addKeyListener(numericTextListener);
 		txtRules6.setTextLimit(2);
 
@@ -305,7 +310,9 @@ public class DataListTab implements IUsageTab {
 		lblMailAddress.setText(Messages.getString("MAIL_ADDRESS"));
 
 		txtMailAddress = new Text(actionInfoComposite, SWT.BORDER);
-		txtMailAddress.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		GridData gdMail = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gdMail.widthHint = 200;
+		txtMailAddress.setLayoutData(gdMail);
 
 		Composite optionsComposite = new Composite(memoryCpuUsageMonitoring, SWT.NONE);
 		optionsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

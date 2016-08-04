@@ -67,7 +67,6 @@
 	<service ref="SendMailCommand">
 		<interfaces>
 			<value>tr.org.liderahenk.lider.core.api.plugin.ICommand</value>
-		 	<value>tr.org.liderahenk.lider.core.api.plugin.ITaskAwareCommand</value>
 		</interfaces>
 	</service>
 	<bean id="SendMailCommand"
