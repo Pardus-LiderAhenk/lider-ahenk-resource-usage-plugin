@@ -1,5 +1,6 @@
 package tr.org.liderahenk.resourceusage.dialogs;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import tr.org.liderahenk.liderconsole.core.dialogs.DefaultTaskDialog;
 import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
+import tr.org.liderahenk.liderconsole.core.ldap.enums.DNType;
+import tr.org.liderahenk.liderconsole.core.rest.requests.TaskRequest;
+import tr.org.liderahenk.liderconsole.core.rest.utils.TaskRestUtils;
 import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
 import tr.org.liderahenk.liderconsole.core.xmpp.notifications.TaskStatusNotification;
 import tr.org.liderahenk.resourceusage.constants.ResourceUsageConstants;
@@ -83,6 +87,19 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 		return Messages.getString("RESOURCE_USAGE");
 	}
 
+
+	private void getData() {
+
+		try {
+			TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK, getPluginName(),
+					getPluginVersion(), getCommandId(), null, null, new Date());
+			TaskRestUtils.execute(task);
+		} catch (Exception e1) {
+			logger.error(e1.getMessage(), e1);
+			Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
+		}
+	}
+	
 	@Override
 	public Control createTaskDialogArea(Composite parent) {
 
@@ -219,6 +236,7 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 
 		lblUsageDiscInfo = new Label(diskComposite, SWT.NONE);
 
+		getData();
 		return null;
 	}
 

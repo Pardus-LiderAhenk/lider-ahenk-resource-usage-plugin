@@ -139,6 +139,7 @@ public class AlertListTab implements IUsageTab {
 		});
 
 		TableViewerColumn actionColumn = createTableViewerColumn(titles[3], bounds[3]);
+		actionColumn.getColumn().setAlignment(SWT.LEFT);
 		actionColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -150,6 +151,7 @@ public class AlertListTab implements IUsageTab {
 		});
 
 		TableViewerColumn messageColumn = createTableViewerColumn(titles[4], bounds[4]);
+		messageColumn.getColumn().setAlignment(SWT.LEFT);
 		messageColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
