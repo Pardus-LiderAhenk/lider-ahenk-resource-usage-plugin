@@ -638,7 +638,7 @@ public class DataListTab implements IUsageTab {
 		boolean isShutDown = false;
 		try {
 			TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK, getPluginName(),
-					getPluginVersion(), "SHUTDOWN", null, null, new Date());
+					getPluginVersion(), "SHUTDOWN", null, null, null, new Date());
 			TaskRestUtils.execute(task);
 			memAlerts.clear();
 			cpuAlerts.clear();
@@ -659,7 +659,7 @@ public class DataListTab implements IUsageTab {
 			body = body.replaceFirst("CHANGE", calculated);
 			parameters.put(ResourceUsageConstants.MAIL_PARAMETERS.BODY, body);
 			TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK, getPluginName(),
-					getPluginVersion(), "SEND_MAIL", parameters, null, new Date());
+					getPluginVersion(), "SEND_MAIL", parameters, null, null, new Date());
 			TaskRestUtils.execute(task);
 		} catch (Exception e1) {
 			Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
@@ -781,7 +781,7 @@ public class DataListTab implements IUsageTab {
 	private void executeTask(Map<String, Object> parameters) {
 		try {
 			TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK, getPluginName(),
-					getPluginVersion(), "RESOURCE_INFO_ALERT", parameters, null, new Date());
+					getPluginVersion(), "RESOURCE_INFO_ALERT", parameters, null, null, new Date());
 			TaskRestUtils.execute(task);
 		} catch (Exception e1) {
 			Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
