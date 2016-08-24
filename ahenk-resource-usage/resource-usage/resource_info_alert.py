@@ -4,7 +4,6 @@
 # Author: Emre Akkaya <emre.akkaya@agem.com.tr>
 
 from base.plugin.abstract_plugin import AbstractPlugin
-from base.model.enum.ContentType import ContentType
 from threading import Thread
 import time
 import psutil
@@ -35,7 +34,7 @@ class ResourceUsage(AbstractPlugin):
                 self._threadCep.start()
                 data = {"status": "started"}
                 self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
-                                             message='Kaynak kullanım bilgileri toplanmaya başlandı.', data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
+                                             message='Kaynak kullanım bilgileri toplanmaya başlandı.', data=json.dumps(data), content_type=self.get_content_type().APPLICATION_JSON.value)
             elif action == "stop_timer":
                 self.is_running = False
                 with open('is_running.txt', 'w') as f:
@@ -43,7 +42,7 @@ class ResourceUsage(AbstractPlugin):
                 data = {"action": "stop"}
                 self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
                                                  message='Kaynak kullanım bilgilerinin toplanması durduruldu.',
-                                                 data=json.dumps(data), content_type=ContentType.APPLICATION_JSON.value)
+                                                 data=json.dumps(data), content_type=self.get_content_type().APPLICATION_JSON.value)
         except Exception as e:
             self.logger.error(str(e))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,

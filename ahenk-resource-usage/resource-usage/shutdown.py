@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Author:Mine DOGAN <mine.dogan@agem.com.tr>
-from base.model.enum.ContentType import ContentType
+
 from base.plugin.abstract_plugin import AbstractPlugin
 from base.system.system import System
 import json
+
 
 class ShutDownMachine(AbstractPlugin):
     def __init__(self, task, context):
@@ -27,11 +28,14 @@ class ShutDownMachine(AbstractPlugin):
                 .format(System.Hardware.Network.mac_addresses(), System.Hardware.Network.ip_addresses())
             data = {"shutdown": "true"}
             self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
-                                         data = json.dumps(data), message=response, content_type= ContentType.APPLICATION_JSON.value)
+                                         data=json.dumps(data), message=response,
+                                         content_type=self.get_content_type().APPLICATION_JSON.value)
             self.logger.info('[SEOURCE USAGE - Shut Down Machine] task is handled successfully')
 
         except Exception as e:
-            self.logger.error('[RESOURCE USAGE - Shut Down Machine] A problem occured while handling Shutdown task: {0}'.format(str(e)))
+            self.logger.error(
+                '[RESOURCE USAGE - Shut Down Machine] A problem occured while handling Shutdown task: {0}'.format(
+                    str(e)))
             self.context.create_response(code=self.message_code.TASK_ERROR.value,
                                          message='Makina kapatılırken bir hata oluştu: {0}'.format(str(e)))
 
