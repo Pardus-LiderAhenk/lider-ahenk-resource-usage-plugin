@@ -35,52 +35,36 @@
 		class="tr.org.liderahenk.resourceusage.commands.ResourceUsageCommand">
 		<property name="resultFactory" ref="resultFactory" />
 		<property name="pluginInfo" ref="pluginInfoImpl" />
-		<property name="logService" ref="logService" />
-		<property name="pluginDbService" ref="pluginDbService" />
 	</bean>
 
 	<!-- ICommand implementation is used to process a task execution -->
-	<service ref="ResourceUsageAlertCommand">
-		<interfaces>
-			<value>tr.org.liderahenk.lider.core.api.plugin.ICommand</value>
-		<!-- 	<value>tr.org.liderahenk.lider.core.api.plugin.ITaskAwareCommand</value> -->
-		</interfaces>
-	</service>
+	<service ref="ResourceUsageAlertCommand" interface="tr.org.liderahenk.lider.core.api.plugin.ICommand" />
 	<bean id="ResourceUsageAlertCommand"
 		class="tr.org.liderahenk.resourceusage.commands.ResourceUsageAlertCommand">
 		<property name="resultFactory" ref="resultFactory" />
 		<property name="pluginInfo" ref="pluginInfoImpl" />
 		<property name="mailService" ref="mailService" />
 	</bean>
-	
-	  <!-- ICommand implementation is used to process a task execution -->
-  <service 
-      ref="ShutdownCommand"
-      interface="tr.org.liderahenk.lider.core.api.plugin.ICommand" />
-  <bean id="ShutdownCommand" 
-        class="tr.org.liderahenk.resourceusage.commands.ShutdownCommand">
-        <property name="resultFactory" ref="resultFactory"/>
-		<property name="pluginInfo" ref="pluginInfoImpl" />
-  </bean>
 
 	<!-- ICommand implementation is used to process a task execution -->
-	<service ref="SendMailCommand">
-		<interfaces>
-			<value>tr.org.liderahenk.lider.core.api.plugin.ICommand</value>
-		</interfaces>
-	</service>
+	<service ref="ShutdownCommand" interface="tr.org.liderahenk.lider.core.api.plugin.ICommand" />
+	<bean id="ShutdownCommand"
+		class="tr.org.liderahenk.resourceusage.commands.ShutdownCommand">
+		<property name="resultFactory" ref="resultFactory" />
+		<property name="pluginInfo" ref="pluginInfoImpl" />
+	</bean>
+
+	<!-- ICommand implementation is used to process a task execution -->
+	<service ref="SendMailCommand" interface="tr.org.liderahenk.lider.core.api.plugin.ICommand" />
 	<bean id="SendMailCommand"
 		class="tr.org.liderahenk.resourceusage.commands.SendMailCommand">
 		<property name="resultFactory" ref="resultFactory" />
 		<property name="pluginInfo" ref="pluginInfoImpl" />
 		<property name="mailService" ref="mailService" />
 	</bean>
-	
-	<reference id="mailService" interface="tr.org.liderahenk.lider.core.api.mail.IMailService" />
-	<reference id="pluginDbService"
-		interface="tr.org.liderahenk.lider.core.api.persistence.IPluginDbService" />
-	<reference id="logService"
-		interface="tr.org.liderahenk.lider.core.api.log.IOperationLogService" />
+
+	<reference id="mailService"
+		interface="tr.org.liderahenk.lider.core.api.mail.IMailService" />
 	<reference id="resultFactory"
 		interface="tr.org.liderahenk.lider.core.api.service.ICommandResultFactory" />
 </blueprint>

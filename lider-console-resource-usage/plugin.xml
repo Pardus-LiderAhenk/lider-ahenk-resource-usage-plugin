@@ -11,30 +11,25 @@
       <command
             categoryId="tr.org.liderahenk.liderconsole.commands.category"
             id="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask"            
-            name="%command.task">
+            name="%command.resource.usage.task">
       </command>
       <command
             categoryId="tr.org.liderahenk.liderconsole.commands.category"
             id="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"            
-            name="%command.taskalert">
+            name="%command.resource.usage.alert.task">
       </command>
    </extension>
    
    <extension
        point="org.eclipse.ui.handlers">
-      	
-      	<!-- Task handler -->
        <handler
             class="tr.org.liderahenk.resourceusage.handlers.ResourceUsageTaskHandler"
             commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask">
-          
       </handler>
-             <handler
+	  <handler
             class="tr.org.liderahenk.resourceusage.handlers.ResourceUsageAlertTaskHandler"
             commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask">
-          
       </handler>
-      
   </extension>
   
   <extension
@@ -45,7 +40,8 @@
  				<command
                   commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"
                   id="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"
-                  tooltip="%command.taskalert">
+                  icon="icons/16/resource.png"
+                  tooltip="%command.resource.usage.alert.task">
 				  	<visibleWhen>
 				  		<and>
 							<with
@@ -71,7 +67,8 @@
  				<command
                   commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask"
                   id="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask"
-                  tooltip="%command.task">
+                  icon="icons/16/resource.png"
+                  tooltip="%command.resource.usage.task">
 				  	<visibleWhen>
 				  		<and>
 							<with
@@ -90,7 +87,15 @@
 					</visibleWhen>
            		</command>
 		</menuContribution>
-			
   </extension>
+  
+	<!-- Add extension point contribution for i18n messages -->
+	<extension
+  		point="tr.org.liderahenk.liderconsole.core.i18n">
+  		<task code="RESOURCE_INFO_ALERT" label="%command.resource.usage.alert.task" />
+  		<task code="RESOURCE_INFO_FETCHER" label="%command.resource.usage.task" />
+  		<task code="SHUTDOWN" label="%command.shutdown.task" />
+		<plugin name="resource-usage" label="%plugin.label" />
+  	</extension>
   	
 </plugin>

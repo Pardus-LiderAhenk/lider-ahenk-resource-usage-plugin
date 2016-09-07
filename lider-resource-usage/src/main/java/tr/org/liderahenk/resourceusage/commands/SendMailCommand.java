@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import tr.org.liderahenk.lider.core.api.mail.IMailService;
 import tr.org.liderahenk.lider.core.api.plugin.ICommand;
 import tr.org.liderahenk.lider.core.api.plugin.IPluginInfo;
@@ -18,7 +15,6 @@ import tr.org.liderahenk.lider.core.api.service.ICommandResultFactory;
 import tr.org.liderahenk.lider.core.api.service.enums.CommandResultStatus;
 
 public class SendMailCommand implements ICommand {
-
 
 	private ICommandResultFactory resultFactory;
 	private IPluginInfo pluginInfo;
@@ -33,7 +29,6 @@ public class SendMailCommand implements ICommand {
 		List<String> to = new ArrayList<String>();
 		to.add(parameterMap.get("to").toString());
 		getMailService().sendMail(to, "Ahenk Makinada Limit Değerler Aşıldı!", parameterMap.get("body").toString());
-
 
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 

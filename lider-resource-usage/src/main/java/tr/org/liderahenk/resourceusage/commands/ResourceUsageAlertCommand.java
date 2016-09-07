@@ -1,48 +1,24 @@
 package tr.org.liderahenk.resourceusage.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import tr.org.liderahenk.lider.core.api.mail.IMailService;
 import tr.org.liderahenk.lider.core.api.plugin.ICommand;
 import tr.org.liderahenk.lider.core.api.plugin.IPluginInfo;
-import tr.org.liderahenk.lider.core.api.rest.requests.ITaskRequest;
 import tr.org.liderahenk.lider.core.api.service.ICommandContext;
 import tr.org.liderahenk.lider.core.api.service.ICommandResult;
 import tr.org.liderahenk.lider.core.api.service.ICommandResultFactory;
 import tr.org.liderahenk.lider.core.api.service.enums.CommandResultStatus;
 
-public class ResourceUsageAlertCommand implements ICommand{
+public class ResourceUsageAlertCommand implements ICommand {
 
-	private Logger logger = LoggerFactory.getLogger(ResourceUsageAlertCommand.class);
-	
 	private ICommandResultFactory resultFactory;
 	private IPluginInfo pluginInfo;
 	private IMailService mailService;
 
 	@Override
 	public ICommandResult execute(ICommandContext context) {
-		
-		ITaskRequest req = context.getRequest();
-		Map<String, Object> parameterMap = req.getParameterMap();
-		parameterMap.put("dummy-param", "dummy-param-value");
-		
-		logger.debug("Parameter map updated.");
-		
-		//Object entity = new Object();
-		//pluginDbService.save(entity);
-		logger.debug("Entity saved successfully.");
-		
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("dummy-param", "dummy-param-value");
-		
-		ICommandResult commandResult = resultFactory.create(CommandResultStatus.OK, new ArrayList<String>(), this, resultMap);
-
-		return commandResult;
+		return resultFactory.create(CommandResultStatus.OK, new ArrayList<String>(), this);
 	}
 
 	@Override
@@ -59,7 +35,7 @@ public class ResourceUsageAlertCommand implements ICommand{
 	public Boolean executeOnAgent() {
 		return true;
 	}
-	
+
 	@Override
 	public String getPluginName() {
 		return pluginInfo.getPluginName();
@@ -73,7 +49,7 @@ public class ResourceUsageAlertCommand implements ICommand{
 	public void setResultFactory(ICommandResultFactory resultFactory) {
 		this.resultFactory = resultFactory;
 	}
-	
+
 	public void setPluginInfo(IPluginInfo pluginInfo) {
 		this.pluginInfo = pluginInfo;
 	}
@@ -86,35 +62,37 @@ public class ResourceUsageAlertCommand implements ICommand{
 		this.mailService = mailService;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	public void onTaskUpdate(ICommandExecutionResult result) {
-//		Map<String, Object> responseData;
-//		try {
-//			responseData = new ObjectMapper().readValue(result.getResponseData(), 0, result.getResponseData().length,
-//					new TypeReference<HashMap<String, Object>>() {
-//			});
-//		    List<String> resultList = (List<String>) responseData.get("Result");
-//		    for(int i = 0 ; i <= resultList.size()/2 ; i=i+2){
-//				List<String> to = new ArrayList<String>();
-//				to.add(resultList.get(i+1));
-//				getMailService().sendMail(to, "Ahenk Makinada Limit Değerler Aşıldı!", resultList.get(i));
-//		    }
-//		} catch (JsonParseException e) {
-//			e.printStackTrace();
-//		} catch (JsonMappingException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// public void onTaskUpdate(ICommandExecutionResult result) {
+	// Map<String, Object> responseData;
+	// try {
+	// responseData = new ObjectMapper().readValue(result.getResponseData(), 0,
+	// result.getResponseData().length,
+	// new TypeReference<HashMap<String, Object>>() {
+	// });
+	// List<String> resultList = (List<String>) responseData.get("Result");
+	// for(int i = 0 ; i <= resultList.size()/2 ; i=i+2){
+	// List<String> to = new ArrayList<String>();
+	// to.add(resultList.get(i+1));
+	// getMailService().sendMail(to, "Ahenk Makinada Limit Değerler Aşıldı!",
+	// resultList.get(i));
+	// }
+	// } catch (JsonParseException e) {
+	// e.printStackTrace();
+	// } catch (JsonMappingException e) {
+	// e.printStackTrace();
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	// }
 
-//	public IMailService getMailService() {
-//		return mailService;
-//	}
-//
-//	public void setMailService(IMailService mailService) {
-//		this.mailService = mailService;
-//	}
-	
+	// public IMailService getMailService() {
+	// return mailService;
+	// }
+	//
+	// public void setMailService(IMailService mailService) {
+	// this.mailService = mailService;
+	// }
+
 }
