@@ -52,6 +52,7 @@ public class DataListTab implements IUsageTab {
 	private String pluginVersion;
 	private String pluginName;
 	private Set<String> dnSet;
+	private boolean isOperationStarted = false;
 	private ArrayList<ResourceUsageTableItem> items = new ArrayList<>();
 
 	public String getPluginVersion() {
@@ -326,17 +327,20 @@ public class DataListTab implements IUsageTab {
 		btnFloatingAverage.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				validateBeforeSave();
-				disableInputs();
-				removeTableItems();
-				cleanUpAverageTexts();
-				memAlerts.clear();
-				cpuAlerts.clear();
-				totalItems.clear();
-				filteredItems.clear();
-				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.START_TIMER);
-				executeTask(parameters);
-
+				if(isOperationStarted == false){
+					validateBeforeSave();
+					disableInputs();
+					removeTableItems();
+					cleanUpAverageTexts();
+					memAlerts.clear();
+					cpuAlerts.clear();
+					totalItems.clear();
+					filteredItems.clear();
+					Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.START_TIMER);
+					isOperationStarted = true;
+					executeTask(parameters);
+				}
+					
 			}
 
 			@Override
@@ -350,9 +354,12 @@ public class DataListTab implements IUsageTab {
 		btnFixedAverage.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.STOP_TIMER);
-				executeTask(parameters);
-				enableInputs();
+				if(isOperationStarted == true){
+					isOperationStarted = false;
+					Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.STOP_TIMER);
+					executeTask(parameters);
+					enableInputs();
+				}
 			}
 
 			@Override
@@ -842,5 +849,13 @@ public class DataListTab implements IUsageTab {
 	public void removeTableItems() {
 		tableViewer.setInput(null);
 		tableViewer.refresh();
+	}
+	
+	public void finishTaskIfExecuting(){
+		if(isOperationStarted == true){
+			isOperationStarted = false;
+			Map<String, Object> parameters = getParameterMap(ResourceUsageConstants.STOP_TIMER);
+			executeTask(parameters);
+		}
 	}
 }
