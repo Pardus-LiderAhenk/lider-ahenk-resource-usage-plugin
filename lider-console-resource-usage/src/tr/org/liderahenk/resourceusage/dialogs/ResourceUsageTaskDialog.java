@@ -11,9 +11,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -24,11 +28,14 @@ import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tr.org.liderahenk.liderconsole.core.constants.LiderConstants;
 import tr.org.liderahenk.liderconsole.core.dialogs.DefaultTaskDialog;
 import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
 import tr.org.liderahenk.liderconsole.core.ldap.enums.DNType;
 import tr.org.liderahenk.liderconsole.core.rest.requests.TaskRequest;
 import tr.org.liderahenk.liderconsole.core.rest.utils.TaskRestUtils;
+import tr.org.liderahenk.liderconsole.core.utils.SWTResourceManager;
+import tr.org.liderahenk.liderconsole.core.widgets.LiderConfirmBox;
 import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
 import tr.org.liderahenk.liderconsole.core.xmpp.notifications.TaskStatusNotification;
 import tr.org.liderahenk.resourceusage.constants.ResourceUsageConstants;
@@ -77,8 +84,8 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 	private Label lblUsageDisc;
 	private Label lblUsageDiscInfo;
 
-	public ResourceUsageTaskDialog(Shell parentShell, String dnString) {
-		super(parentShell, dnString);
+	public ResourceUsageTaskDialog(Shell parentShell, String dnString, boolean activation) {
+		super(parentShell, dnString, activation);
 		subscribeEventHandler(taskStatusNotificationHandler);
 	}
 
@@ -340,6 +347,51 @@ public class ResourceUsageTaskDialog extends DefaultTaskDialog {
 	@Override
 	public String getPluginVersion() {
 		return "1.0.0";
+	}
+
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		// Execute task now
+		Button btnExecuteNow = createButton(parent, 5000, Messages.getString("REFRESH"), false);
+		btnExecuteNow.setImage(
+				SWTResourceManager.getImage(LiderConstants.PLUGIN_IDS.LIDER_CONSOLE_CORE, "icons/16/task-play.png"));
+		btnExecuteNow.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Validation of task data
+				if (validateTaskData()) {
+					if (LiderConfirmBox.open(Display.getDefault().getActiveShell(),
+							Messages.getString("TASK_EXEC_TITLE"), Messages.getString("TASK_EXEC_MESSAGE"))) {
+						try {
+							TaskRequest task = new TaskRequest(new ArrayList<String>(getDnSet()), DNType.AHENK,
+									getPluginName(), getPluginVersion(), getCommandId(), getParameterMap(), null, null,
+									new Date());
+							TaskRestUtils.execute(task);
+						} catch (Exception e1) {
+							logger.error(e1.getMessage(), e1);
+							Notifier.error(null, Messages.getString("ERROR_ON_EXECUTE"));
+						}
+					}
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
+		// Close
+				Button closeButton = createButton(parent, IDialogConstants.CANCEL_ID, Messages.getString("CANCEL"), true);
+				closeButton.addSelectionListener(new SelectionListener() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						unsubscribeEventHandlers();
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+					}
+				});
 	}
 
 }
