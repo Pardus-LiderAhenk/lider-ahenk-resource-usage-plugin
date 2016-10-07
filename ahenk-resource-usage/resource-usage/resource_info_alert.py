@@ -23,7 +23,7 @@ class ResourceUsage(AbstractPlugin):
     def handle_task(self):
         try:
             action = self.data['action']
-            self.logger.debug("[RESOURCE USAGE] Action: {0}".format(action))
+            self.logger.debug("Action: {0}".format(action))
 
             if action == "start_timer":
                 self.is_running = True
@@ -59,13 +59,13 @@ class ResourceUsage(AbstractPlugin):
     def gather_resource_usage(self, task_id):
         # Memory usage
         memory_usage = psutil.virtual_memory()
-        self.logger.debug("[RESOURCE USAGE] Memory usage: {0}".format(memory_usage))
+        self.logger.debug("Memory usage: {0}".format(memory_usage))
         # Disk usage
         disk_usage = psutil.disk_usage('/')
-        self.logger.debug("[RESOURCE USAGE] Disk usage: {0}".format(disk_usage))
+        self.logger.debug("Disk usage: {0}".format(disk_usage))
         # CPU usage
         cpu_percentage = psutil.cpu_percent(interval=1)
-        self.logger.debug("[RESOURCE USAGE] CPU percentage: {0}".format(cpu_percentage))
+        self.logger.debug("CPU percentage: {0}".format(cpu_percentage))
 
         data = {}
         data['memoryUsage'] = str(memory_usage)
@@ -74,7 +74,7 @@ class ResourceUsage(AbstractPlugin):
         command = 'python3 /opt/ahenk/ahenkd.py send -t {0} -m {1} -s'.format(task_id, json.dumps(str(data)))
         result_code, p_out, p_err = self.execute(command)
         if result_code != 0:
-            self.logger.error("[RESOURCE USAGE] Error occurred while sending message: " + str(p_err))
+            self.logger.error("Error occurred while sending message: " + str(p_err))
 
 
 def handle_task(task, context):

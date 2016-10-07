@@ -18,7 +18,7 @@ class ResourceUsage(AbstractPlugin):
     def handle_task(self):
         try:
             device = ""
-            self.logger.debug("[RESOURCE USAGE] Gathering resource usage for disk, memory and CPU.")
+            self.logger.debug("Gathering resource usage for disk, memory and CPU.")
             for part in self.Hardware.Disk.partitions():
                 if len(device) != 0:
                     device += ", "
@@ -36,7 +36,7 @@ class ResourceUsage(AbstractPlugin):
                     'CPU Actual Hz': self.Hardware.Cpu.hz_actual(),
                     'CPU Advertised Hz': self.Hardware.Cpu.hz_advertised()
                     }
-            self.logger.debug("[RESOURCE USAGE] Resource usage info gathered.")
+            self.logger.debug("Resource usage info gathered.")
             self.context.create_response(code=self.message_code.TASK_PROCESSED.value,
                                          message='Anlık kaynak kullanım bilgisi başarıyla toplandı.',
                                          data=json.dumps(data), content_type=self.get_content_type().APPLICATION_JSON.value)
