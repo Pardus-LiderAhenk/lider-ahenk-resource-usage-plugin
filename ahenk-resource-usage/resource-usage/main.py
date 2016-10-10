@@ -7,10 +7,10 @@ def info():
     inf['name'] = 'resource-usage'
     inf['version'] = '1.0.0'
     inf['support'] = 'debian'
-    inf['description'] = ''
+    inf['description'] = 'Resource Usage Info and Resource Usage Controls and Warnings are handled with this plugin'
     inf['task'] = True
     inf['user_oriented'] = False
     inf['machine_oriented'] = False
-    inf['developer'] = ''
+    inf['developer'] = 'cemre.alpsoy@agem.com.tr'
 
     return inf
