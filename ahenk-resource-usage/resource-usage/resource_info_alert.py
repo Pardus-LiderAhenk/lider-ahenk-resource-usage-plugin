@@ -67,10 +67,7 @@ class ResourceUsage(AbstractPlugin):
         cpu_percentage = psutil.cpu_percent(interval=1)
         self.logger.debug("CPU percentage: {0}".format(cpu_percentage))
 
-        data = {}
-        data['memoryUsage'] = str(memory_usage)
-        data['diskUsage'] = str(disk_usage)
-        data['cpuPercentage'] = str(cpu_percentage)
+        data = {'memoryUsage': str(memory_usage), 'diskUsage': str(disk_usage), 'cpuPercentage': str(cpu_percentage)}
         command = 'python3 /opt/ahenk/ahenkd.py send -t {0} -m {1} -s'.format(task_id, json.dumps(str(data)))
         result_code, p_out, p_err = self.execute(command)
         if result_code != 0:
