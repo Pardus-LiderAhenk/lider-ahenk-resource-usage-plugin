@@ -34,9 +34,19 @@
   
   <extension
          point="org.eclipse.ui.menus">
+         
+		<menuContribution
+			locationURI="popup:tr.org.liderahenk.liderconsole.menus.ApplyTask?after=additions">
+			<menu
+				id="tr.org.liderahenk.liderconsole.menus.ResourceUsage"
+				label="%plugin.label"
+				icon="icons/16/resource.png">
+			</menu>
+		</menuContribution>
+         
       <menuContribution
       		allPopups="false"
-            locationURI="popup:tr.org.liderahenk.liderconsole.menus.ApplyTask?after=additions">
+            locationURI="popup:tr.org.liderahenk.liderconsole.menus.ResourceUsage?after=additions">
  				<command
                   commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"
                   id="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask"
@@ -60,10 +70,10 @@
 					</visibleWhen>
            		</command>
 		</menuContribution>
-      	<!-- Add extension point contribution for "task execution" dialogs -->
+
 		<menuContribution
       		allPopups="false"
-            locationURI="popup:tr.org.liderahenk.liderconsole.menus.ApplyTask?after=additions">
+            locationURI="popup:tr.org.liderahenk.liderconsole.menus.ResourceUsage?after=additions">
  				<command
                   commandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask"
                   id="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask"
