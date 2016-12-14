@@ -5,7 +5,7 @@
 def info():
     inf = dict()
     inf['name'] = 'resource-usage'
-    inf['version'] = '1.0.0'
+    inf['version'] = '1.0.0-alfa'
     inf['support'] = 'debian'
     inf['description'] = 'Resource Usage Info and Resource Usage Controls and Warnings are handled with this plugin'
     inf['task'] = True
