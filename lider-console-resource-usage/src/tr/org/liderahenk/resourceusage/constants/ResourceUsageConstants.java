@@ -4,7 +4,7 @@ public class ResourceUsageConstants {
 	
 	public static final String PLUGIN_NAME = "resource-usage";
 	
-	public static final String PLUGIN_VERSION = "1.0.0";
+	public static final String PLUGIN_VERSION = "1.0.0-beta";
 	
 	public static final String START_TIMER = "start_timer";
 	public static final String STOP_TIMER = "stop_timer";
