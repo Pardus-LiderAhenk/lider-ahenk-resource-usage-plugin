@@ -111,12 +111,12 @@
   	  	  
      <extension
   		point="tr.org.liderahenk.liderconsole.core.taskmenu">
-  		<taskItem label="%command.task" pluginName="resource-usage" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask" />
+  		<taskItem label="%command.resource.usage.task" pluginName="resource-usage" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask" />
   	</extension>
   	  	  
      <extension
   		point="tr.org.liderahenk.liderconsole.core.taskmenu">
-  		<taskItem label="%command.task" pluginName="resource-usage" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask" />
+  		<taskItem label="%command.resource.usage.alert.task" pluginName="resource-usage" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask" />
   	</extension>
   	
   	
