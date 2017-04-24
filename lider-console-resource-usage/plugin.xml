@@ -108,15 +108,23 @@
 		<plugin name="resource-usage" label="%plugin.label" />
   	</extension>
   	
-  	  	  
+  	 <!-- Add extension point contribution for "task execution" dialogs --> 	  
      <extension
   		point="tr.org.liderahenk.liderconsole.core.taskmenu">
-  		<taskItem label="%command.resource.usage.task" pluginName="resource-usage" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask" description="Bir Ahenk için çalıştırılan bu görev, Ahenk makinesinin anlık kaynak kullanım bilgisini kullanıcıya sunmaktadır.&#xA;Kaynak kullanımını görmek için tıklayınız.." />
+  		<taskItem label="%command.resource.usage.task" pluginName="resource-usage" 
+  		pluginVersion="1.0.0" 
+  		taskCommandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageTask" 
+  		description="Bir Ahenk için çalıştırılan bu görev, Ahenk makinesinin anlık kaynak kullanım bilgisini kullanıcıya sunmaktadır.&#xA;Kaynak kullanımını görmek için tıklayınız.." 
+  		imagePath="resource.png"/>
   	</extension>
   	  	  
      <extension
   		point="tr.org.liderahenk.liderconsole.core.taskmenu">
-  		<taskItem label="%command.resource.usage.alert.task" pluginName="resource-usage" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask" description="Belirlenen eşik değerlere göre kaynak kullanımı alarmı üretmesini sağlayan eklentidir.&#xA;Kaynak kullanımı alarmı üretmek için tıklayınız.." />
+  		<taskItem label="%command.resource.usage.alert.task" pluginName="resource-usage" 
+  		pluginVersion="1.0.0" 
+  		taskCommandId="tr.org.liderahenk.liderconsole.commands.ResourceUsageAlertTask" 
+  		description="Belirlenen eşik değerlere göre kaynak kullanımı alarmı üretmesini sağlayan eklentidir.&#xA;Kaynak kullanımı alarmı üretmek için tıklayınız.." 
+  		imagePath="resource.png"/>
   	</extension>
   	
   	
