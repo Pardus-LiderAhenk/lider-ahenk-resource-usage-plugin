@@ -33,7 +33,7 @@ Resource usage plugin for [Lider Ahenk project](http://www.liderahenk.org.tr) wh
 
 #### Ahenk
 
-1. Create a soft link for _ahenk-resource-usage/resource-usage_ directory via `sudo ln -s lider-ahenk-resource-usage-plugin/ahenk-resource-usage/resource-usage/ /opt/ahenk/plugins`
+1. Create a soft link for _ahenk-resource-usage/resource-usage_ directory via `sudo ln -s lider-ahenk-resource-usage-plugin/ahenk-resource-usage/resource-usage/ /usr/share/ahenk/plugins`
 
 ## Contribution
 
